@@ -21,7 +21,7 @@ LinkingTo:
 Imports: 
     Rcpp,
     bigassertr,
-    Matrix,
     methods
-Suggests: 
+Suggests:
+    Matrix,
     testthat (>= 2.1.0)

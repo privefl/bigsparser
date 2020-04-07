@@ -5,10 +5,9 @@
 /******************************************************************************/
 
 // [[Rcpp::export]]
-SEXP getXPtrSFBM(std::string path, std::size_t n, std::size_t m,
-                 std::vector<int> p) {
+SEXP getXPtrSFBM(std::string path, int n, int m, std::vector<int> p) {
 
-  if (p.size() != (m + 1)) Rcpp::stop("This is a bug.");
+  if (int(p.size()) != (m + 1)) Rcpp::stop("This is a bug.");
 
   // http://gallery.rcpp.org/articles/intro-to-exceptions/
   try {

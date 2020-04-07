@@ -5,6 +5,14 @@ getXPtrSFBM <- function(path, n, m, p) {
     .Call(`_bigsparser_getXPtrSFBM`, path, n, m, p)
 }
 
+prodVec <- function(X, y) {
+    .Call(`_bigsparser_prodVec`, X, y)
+}
+
+cprodVec <- function(X, y) {
+    .Call(`_bigsparser_cprodVec`, X, y)
+}
+
 write_indval <- function(filename, i, x) {
     invisible(.Call(`_bigsparser_write_indval`, filename, i, x))
 }

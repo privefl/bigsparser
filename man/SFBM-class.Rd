@@ -29,6 +29,7 @@ C++ object to be used as a \verb{XPtr<SFBM>} in C++ code
 \item \verb{$extptr}: (internal) use \verb{$address} instead
 \item \verb{$nrow}: number of rows
 \item \verb{$ncol}: number of columns
+\item \verb{$nval}: number of non-zero values
 \item \verb{$p}: vector of column positions
 \item \verb{$backingfile} or \verb{$sbk}: File with extension 'sbk' that stores the
 data of the SFBM
@@ -43,7 +44,6 @@ And some methods:
 }
 
 \examples{
-
 spmat <- Matrix::rsparsematrix(1000, 1000, 0.01)
 class(spmat)
 (X <- as_SFBM(spmat))

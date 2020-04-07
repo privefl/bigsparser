@@ -6,16 +6,40 @@
 using namespace Rcpp;
 
 // getXPtrSFBM
-SEXP getXPtrSFBM(std::string path, std::size_t n, std::size_t m, std::vector<int> p);
+SEXP getXPtrSFBM(std::string path, int n, int m, std::vector<int> p);
 RcppExport SEXP _bigsparser_getXPtrSFBM(SEXP pathSEXP, SEXP nSEXP, SEXP mSEXP, SEXP pSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type path(pathSEXP);
-    Rcpp::traits::input_parameter< std::size_t >::type n(nSEXP);
-    Rcpp::traits::input_parameter< std::size_t >::type m(mSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type m(mSEXP);
     Rcpp::traits::input_parameter< std::vector<int> >::type p(pSEXP);
     rcpp_result_gen = Rcpp::wrap(getXPtrSFBM(path, n, m, p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// prodVec
+NumericVector prodVec(Environment X, const NumericVector& y);
+RcppExport SEXP _bigsparser_prodVec(SEXP XSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Environment >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(prodVec(X, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cprodVec
+NumericVector cprodVec(Environment X, const NumericVector& y);
+RcppExport SEXP _bigsparser_cprodVec(SEXP XSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Environment >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(cprodVec(X, y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -34,6 +58,8 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_bigsparser_getXPtrSFBM", (DL_FUNC) &_bigsparser_getXPtrSFBM, 4},
+    {"_bigsparser_prodVec", (DL_FUNC) &_bigsparser_prodVec, 2},
+    {"_bigsparser_cprodVec", (DL_FUNC) &_bigsparser_cprodVec, 2},
     {"_bigsparser_write_indval", (DL_FUNC) &_bigsparser_write_indval, 3},
     {NULL, NULL, 0}
 };

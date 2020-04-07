@@ -10,7 +10,7 @@
 \S4method{length}{SFBM}(x)
 }
 \arguments{
-\item{x}{An object of class \link{SFBM}.}
+\item{x}{An object of class \link[=SFBM-class]{SFBM}.}
 }
 \description{
 Dimension and type methods for class \code{SFBM}.

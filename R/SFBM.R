@@ -27,8 +27,7 @@ NIL_PTR <- methods::new("externalptr")
 #'   - `$save()`: Save the SFBM object in `$rds`. Returns the SFBM.
 #'
 #' @importFrom bigassertr assert_class assert_noexist assert_dir
-#'
-#' @examples
+#' @importFrom methods new
 #'
 #' @exportClass SFBM
 #'
@@ -121,14 +120,14 @@ as_SFBM <- function(spmat, backingfile = tempfile()) {
 
   assert_class(spmat, "dgCMatrix")
 
-  methods::new("SFBM", spmat = spmat, backingfile = backingfile)
+  new("SFBM", spmat = spmat, backingfile = backingfile)
 }
 
 ################################################################################
 
 #' Dimension and type methods for class `SFBM`.
 #'
-#' @param x An object of class [SFBM].
+#' @param x An object of class [SFBM][SFBM-class].
 #'
 #' @rdname SFBM-methods
 #' @export

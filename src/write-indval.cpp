@@ -15,12 +15,13 @@ void write_indval(const char * filename,
 
   ofstream myFile(filename, ios::out | ios::binary);
 
-  const int    * pI = i.begin();
+  const int *    pI = i.begin();
   const double * pX = x.begin();
   int K = i.size();
 
   for (int k = 0; k < K; k++, pI++, pX++) {
-    myFile.write(reinterpret_cast<const char*>(pI), 4);
+    double dbl_i = *pI;
+    myFile.write(reinterpret_cast<const char*>(&dbl_i), 8);
     myFile.write(reinterpret_cast<const char*>(pX), 8);
   }
 
