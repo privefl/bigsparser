@@ -16,10 +16,11 @@ NIL_PTR <- methods::new("externalptr")
 #'   - `$extptr`: (internal) use `$address` instead
 #'   - `$nrow`: number of rows
 #'   - `$ncol`: number of columns
+#'   - `$nval`: number of non-zero values
 #'   - `$p`: vector of column positions
-#'   - `$backingfile` or `$bk`: File with extension 'bk' that stores the numeric
+#'   - `$backingfile` or `$sbk`: File with extension 'sbk' that stores the
 #'     data of the SFBM
-#'   - `$rds`: 'rds' file (that may not exist) corresponding to the 'bk' file
+#'   - `$rds`: 'rds' file (that may not exist) corresponding to the 'sbk' file
 #'   - `$is_saved`: whether this object is stored in `$rds`?
 #'
 #' And some methods:
@@ -37,18 +38,18 @@ SFBM_RC <- methods::setRefClass(
 
   fields = list(
     extptr = "externalptr",
-    extptr_rw = "externalptr",
     nrow = "numeric",
     ncol = "numeric",
+    nval = "numeric",
     p = "integer",
     backingfile = "character",
 
     #### Active bindings
     address = function() {
 
-      if (identical(.self$extptr_rw, NIL_PTR)) {
+      if (identical(.self$extptr, NIL_PTR)) {
         .self$extptr <- getXPtrSFBM(
-          path = .self$bk,
+          path = .self$backingfile,
           n    = .self$nrow,
           m    = .self$ncol,
           p    = .self$p
@@ -76,6 +77,7 @@ SFBM_RC <- methods::setRefClass(
       .self$backingfile  <- normalizePath(sbkfile)
       .self$nrow         <- spmat@Dim[1]
       .self$ncol         <- spmat@Dim[2]
+      .self$nval         <- length(spmat@x)
       .self$p            <- spmat@p
       .self$extptr       <- NIL_PTR
 

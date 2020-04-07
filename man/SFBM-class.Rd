@@ -30,9 +30,9 @@ C++ object to be used as a \verb{XPtr<SFBM>} in C++ code
 \item \verb{$nrow}: number of rows
 \item \verb{$ncol}: number of columns
 \item \verb{$p}: vector of column positions
-\item \verb{$backingfile} or \verb{$bk}: File with extension 'bk' that stores the numeric
+\item \verb{$backingfile} or \verb{$sbk}: File with extension 'sbk' that stores the
 data of the SFBM
-\item \verb{$rds}: 'rds' file (that may not exist) corresponding to the 'bk' file
+\item \verb{$rds}: 'rds' file (that may not exist) corresponding to the 'sbk' file
 \item \verb{$is_saved}: whether this object is stored in \verb{$rds}?
 }
 
