@@ -16,6 +16,10 @@ RoxygenNote: 7.0.2
 URL: https://github.com/privefl/bigsparser
 BugReports: https://github.com/privefl/bigsparser/issues
 LinkingTo: 
-    Rcpp
+    Rcpp,
+    rmio
 Imports: 
-    Rcpp
+    Rcpp,
+    bigassertr,
+    Matrix,
+    methods
