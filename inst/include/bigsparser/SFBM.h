@@ -28,10 +28,29 @@ public:
   SFBM(std::string path, size_t n, size_t m, std::vector<int> p) : n(n), m(m), p(p) {
 
     std::error_code error;
-    this->rw_mmap.map(path, error);
-    this->data = reinterpret_cast<indval*>(rw_mmap.data());
-
+    this->ro_mmap.map(path, error);
     if (error) Rcpp::stop("Error when mapping file:\n  %s.\n", error.message());
+
+    this->data = reinterpret_cast<const indval*>(ro_mmap.data());
+  }
+
+  template<class C>
+  C prod(const C& x) {
+
+    C res(n);
+    for (int i = 0; i < n; i++) res[i] = 0;
+
+    for (int j = 0; j < m; j++) {
+
+      auto lo = data + p[j];
+      auto up = data + p[j + 1];
+
+      for (auto it = lo; it < up; it++) {
+        res[it->i] += it->x * x[j];
+      }
+    }
+
+    return res;
   }
 
   template<class C>
@@ -48,11 +67,11 @@ public:
   template<class C>
   double dot_col(int j, const C& x) {
 
-    indval * lo = data + p[j];
-    indval * up = data + p[j + 1];
+    auto lo = data + p[j];
+    auto up = data + p[j + 1];
 
     double cp = 0;
-    for (indval * it = lo; it < up; it++) {
+    for (auto it = lo; it < up; it++) {
       cp += it->x * x[it->i];
     }
 
@@ -60,8 +79,8 @@ public:
   }
 
 private:
-  mio::mmap_sink rw_mmap;
-  indval * data;
+  mio::mmap_source ro_mmap;
+  const indval * data;
   size_t n;
   size_t m;
   std::vector<int> p;
