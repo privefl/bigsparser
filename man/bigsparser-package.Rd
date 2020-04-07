@@ -4,12 +4,21 @@
 \name{bigsparser-package}
 \alias{bigsparser}
 \alias{bigsparser-package}
-\title{bigsparser: What the Package Does (One Line, Title Case)}
+\title{bigsparser: Sparse Matrix Format With Data On Disk}
 \description{
-What the package does (one paragraph).
+Provides a sparse matrix format with data stored on disk, to be
+    used in both R and C++.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/privefl/bigsparser}
+  \item Report bugs at \url{https://github.com/privefl/bigsparser/issues}
+}
+
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: Florian Privé \email{florian.prive.21@gmail.com}
 
 }
 \keyword{internal}
