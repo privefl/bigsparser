@@ -4,10 +4,13 @@
 \name{bigsparser-package}
 \alias{bigsparser}
 \alias{bigsparser-package}
-\title{bigsparser: Sparse Matrix Format With Data On Disk}
+\title{bigsparser: Sparse Matrix Format with Data on Disk}
 \description{
 Provides a sparse matrix format with data stored on disk, to be
-    used in both R and C++.
+    used in both R and C++. This is intended for more efficient use of sparse 
+    data in C++ and also when parallelizing, since data on disk does not need
+    copying. Only a limited number of features will be implemented. For now,
+    conversion can be performed from a 'dgCMatrix' of R package 'Matrix'.
 }
 \seealso{
 Useful links:

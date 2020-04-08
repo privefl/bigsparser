@@ -1,5 +1,5 @@
 Package: bigsparser
-Title: Sparse Matrix Format With Data On Disk
+Title: Sparse Matrix Format with Data on Disk
 Version: 0.1.0
 Authors@R: 
     person(given = "Florian",
@@ -7,7 +7,10 @@ Authors@R:
            role = c("aut", "cre"),
            email = "florian.prive.21@gmail.com")
 Description: Provides a sparse matrix format with data stored on disk, to be
-    used in both R and C++.
+    used in both R and C++. This is intended for more efficient use of sparse 
+    data in C++ and also when parallelizing, since data on disk does not need
+    copying. Only a limited number of features will be implemented. For now,
+    conversion can be performed from a 'dgCMatrix' of R package 'Matrix'.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

@@ -108,6 +108,8 @@ SFBM_RC$lock("nrow")
 #' @param backingfile Path to file where to store data. Extension `.sbk` is
 #'   automatically added.
 #'
+#' @return The new [SFBM][SFBM-class].
+#'
 #' @rdname SFBM-class
 #' @export
 #'

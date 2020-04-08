@@ -15,6 +15,14 @@ sp_cprodVec(X, y)
 \item{y}{A vector of same size of the number of columns of \code{X} for
 \code{sp_prodVec()} abd as the number of rows of \code{X} for \code{sp_cprodVec()}.}
 }
+\value{
+\itemize{
+\item \code{sp_prodVec()}: the vector which is equivalent to \code{X \%*\% y}
+if \code{X} was a dgCMatrix.
+\item \code{sp_cprodVec()}: the vector which is equivalent to \code{Matrix::crossprod(X, y)}
+if \code{X} was a dgCMatrix.
+}
+}
 \description{
 Products between an \link[=SFBM-class]{SFBM} and a vector.
 }

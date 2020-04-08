@@ -8,6 +8,12 @@
 #' @param y A vector of same size of the number of columns of `X` for
 #'   `sp_prodVec()` abd as the number of rows of `X` for `sp_cprodVec()`.
 #'
+#' @return
+#' - `sp_prodVec()`: the vector which is equivalent to `X %*% y`
+#'   if `X` was a dgCMatrix.
+#' - `sp_cprodVec()`: the vector which is equivalent to `Matrix::crossprod(X, y)`
+#'   if `X` was a dgCMatrix.
+#'
 #' @export
 #'
 #' @importFrom bigassertr assert_lengths

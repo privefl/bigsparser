@@ -15,6 +15,9 @@ as_SFBM(spmat, backingfile = tempfile())
 \item{backingfile}{Path to file where to store data. Extension \code{.sbk} is
 automatically added.}
 }
+\value{
+The new \link[=SFBM-class]{SFBM}.
+}
 \description{
 A reference class for storing and accessing sparse matrix-like data stored
 in files on disk.
