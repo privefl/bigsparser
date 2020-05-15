@@ -1,15 +1,23 @@
 // https://eigen.tuxfamily.org/dox/group__MatrixfreeSolverExample.html
 
 // [[Rcpp::depends(RcppEigen)]]
+// [[Rcpp::depends(bigsparser)]]
 
-#include <iostream>
-#include <Eigen/Core>
-#include <Eigen/Dense>
-#include <Eigen/IterativeLinearSolvers>
-#include <unsupported/Eigen/IterativeSolvers>
+// Enable C++11 via this plugin (Rcpp 0.10.3 or later)
+// [[Rcpp::plugins(cpp11)]]
+
+#define STRICT_R_HEADERS
+
+#include <RcppEigen.h>
+#include <bigsparser/SFBM.h>
+
+// #include <iostream>
+// #include <Eigen/Core>
+// #include <Eigen/Dense>
+// #include <Eigen/IterativeLinearSolvers>
+// #include <unsupported/Eigen/IterativeSolvers>
 
 class MatrixReplacement;
-using Eigen::SparseMatrix;
 
 namespace Eigen {
 namespace internal {
@@ -21,7 +29,6 @@ struct traits<MatrixReplacement> :  public Eigen::internal::traits<Eigen::Sparse
 }
 
 // Example of a matrix-free wrapper from a user type to Eigen's compatible type
-// For the sake of simplicity, this example simply wrap a Eigen::SparseMatrix.
 class MatrixReplacement : public Eigen::EigenBase<MatrixReplacement> {
 public:
   // Required typedefs, constants, and method:
@@ -34,8 +41,8 @@ public:
     IsRowMajor = false
   };
 
-  Index rows() const { return mp_mat->rows(); }
-  Index cols() const { return mp_mat->cols(); }
+  Index rows() const { return sfbm->nrow(); }
+  Index cols() const { return sfbm->ncol(); }
 
   template<typename Rhs>
   Eigen::Product<MatrixReplacement,Rhs,Eigen::AliasFreeProduct> operator*(const Eigen::MatrixBase<Rhs>& x) const {
@@ -43,15 +50,12 @@ public:
   }
 
   // Custom API:
-  MatrixReplacement() : mp_mat(0) {}
+  MatrixReplacement(SFBM * sfbm) : sfbm(sfbm) {}
 
-  void attachMyMatrix(const SparseMatrix<double> &mat) {
-    mp_mat = &mat;
-  }
-  const SparseMatrix<double> my_matrix() const { return *mp_mat; }
+  SFBM * matrix() const { return sfbm; }
 
 private:
-  const SparseMatrix<double> *mp_mat;
+  SFBM * sfbm;
 };
 
 
@@ -73,10 +77,7 @@ struct generic_product_impl<MatrixReplacement, Rhs, SparseShape, DenseShape, Gem
     assert(alpha==Scalar(1) && "scaling is not implemented");
     EIGEN_ONLY_USED_FOR_DEBUG(alpha);
 
-    // Here we could simply call dst.noalias() += lhs.my_matrix() * rhs,
-    // but let's do something fancier (and less efficient):
-    for(Index i=0; i<lhs.cols(); ++i)
-      dst += rhs(i) * lhs.my_matrix().col(i);
+    dst.noalias() += (lhs.matrix())->prod<Eigen::VectorXd>(rhs);
   }
 };
 
@@ -84,25 +85,18 @@ struct generic_product_impl<MatrixReplacement, Rhs, SparseShape, DenseShape, Gem
 }
 
 // [[Rcpp::export]]
-int main()
-{
+Rcpp::NumericVector spsolve(Rcpp::Environment X, const Eigen::VectorXd& b, double tol = 1e-10) {
 
-  // Eigen::MatrixXd m = Eigen::MatrixXd::Random(8, 8).sparseView(0.9,1);
-  // std::cout << m <<std::endl;
+  Rcpp::XPtr<SFBM> sfbm = X["address"];
+  MatrixReplacement A(sfbm);
 
-  int n = 200;
-  Eigen::SparseMatrix<double> S = Eigen::MatrixXd::Random(n,n).sparseView(0.9,1);
-  S = S.transpose()*S;
-
-  MatrixReplacement A;
-  A.attachMyMatrix(S);
-
-  Eigen::VectorXd b(n), x;
-  b.setRandom();
+  Eigen::VectorXd x;
 
   // Solve Ax = b using various iterative solver with matrix-free version:
   {
     Eigen::ConjugateGradient<MatrixReplacement, Eigen::Lower|Eigen::Upper, Eigen::IdentityPreconditioner> cg;
+    cg.setMaxIterations(10 * sfbm->ncol());
+    cg.setTolerance(tol);
     cg.compute(A);
     x = cg.solve(b);
     std::cout << "CG:       #iterations: " << cg.iterations() << ", estimated error: " << cg.error() << std::endl;
@@ -111,6 +105,8 @@ int main()
 
   {
     Eigen::BiCGSTAB<MatrixReplacement, Eigen::IdentityPreconditioner> bicg;
+    bicg.setMaxIterations(10 * sfbm->ncol());
+    bicg.setTolerance(tol);
     bicg.compute(A);
     x = bicg.solve(b);
     std::cout << "BiCGSTAB: #iterations: " << bicg.iterations() << ", estimated error: " << bicg.error() << std::endl;
@@ -119,6 +115,8 @@ int main()
 
   {
     Eigen::GMRES<MatrixReplacement, Eigen::IdentityPreconditioner> gmres;
+    gmres.setMaxIterations(10 * sfbm->ncol());
+    gmres.setTolerance(tol);
     gmres.compute(A);
     x = gmres.solve(b);
     std::cout << "GMRES:    #iterations: " << gmres.iterations() << ", estimated error: " << gmres.error() << std::endl;
@@ -127,6 +125,8 @@ int main()
 
   {
     Eigen::DGMRES<MatrixReplacement, Eigen::IdentityPreconditioner> gmres;
+    gmres.setMaxIterations(10 * sfbm->ncol());
+    gmres.setTolerance(tol);
     gmres.compute(A);
     x = gmres.solve(b);
     std::cout << "DGMRES:   #iterations: " << gmres.iterations() << ", estimated error: " << gmres.error() << std::endl;
@@ -135,9 +135,13 @@ int main()
 
   {
     Eigen::MINRES<MatrixReplacement, Eigen::Lower|Eigen::Upper, Eigen::IdentityPreconditioner> minres;
+    minres.setMaxIterations(10 * sfbm->ncol());
+    minres.setTolerance(tol);
     minres.compute(A);
     x = minres.solve(b);
     std::cout << "MINRES:   #iterations: " << minres.iterations() << ", estimated error: " << minres.error() << std::endl;
     // std::cout << x << std::endl;
   }
+
+  return Rcpp::wrap(x);
 }

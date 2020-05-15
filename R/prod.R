@@ -16,7 +16,7 @@
 #'
 #' @export
 #'
-#' @importFrom bigassertr assert_lengths
+#' @importFrom bigassertr assert_class assert_lengths
 #'
 #' @examples
 #' spmat <- Matrix::rsparsematrix(1000, 1000, 0.01)
@@ -25,7 +25,10 @@
 #' sp_cprodVec(X, rep(1, 1000))
 #'
 sp_prodVec <- function(X, y) {
+
+  assert_class(X, "SFBM")
   assert_lengths(seq_len(ncol(X)), y)
+
   prodVec(X, y)
 }
 
@@ -34,7 +37,10 @@ sp_prodVec <- function(X, y) {
 #' @rdname sp_prodVec
 #' @export
 sp_cprodVec <- function(X, y) {
+
+  assert_class(X, "SFBM")
   assert_lengths(seq_len(nrow(X)), y)
+
   cprodVec(X, y)
 }
 

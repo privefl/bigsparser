@@ -1,6 +1,6 @@
 Package: bigsparser
 Title: Sparse Matrix Format with Data on Disk
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: 
     person(given = "Florian",
            family = "Privé",
@@ -20,6 +20,7 @@ URL: https://github.com/privefl/bigsparser
 BugReports: https://github.com/privefl/bigsparser/issues
 LinkingTo: 
     Rcpp,
+    RcppEigen,
     rmio
 Imports: 
     Rcpp,

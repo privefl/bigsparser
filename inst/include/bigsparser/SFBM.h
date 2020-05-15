@@ -46,6 +46,9 @@ public:
     // data2 += 8;
   }
 
+  size_t nrow() const { return n; }
+  size_t ncol() const { return m; }
+
   template<class C>
   C prod(const C& x) {
 

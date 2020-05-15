@@ -3,6 +3,7 @@
 export(as_SFBM)
 export(sp_cprodVec)
 export(sp_prodVec)
+export(sp_solve_sym)
 exportClasses(SFBM)
 exportMethods(dim)
 exportMethods(length)
