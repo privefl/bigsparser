@@ -40,7 +40,7 @@ SFBM_RC <- methods::setRefClass(
   fields = list(
     extptr = "externalptr",
     nrow = "numeric",
-    p = "integer",
+    p = "numeric",
     backingfile = "character",
 
     #### Active bindings
@@ -99,7 +99,7 @@ SFBM_RC <- methods::setRefClass(
       write_indval(sbkfile, spmat@i + as.integer(offset_i), spmat@x)
 
       .self$nrow   <- max(.self$nrow, spmat@Dim[1] + offset_i)
-      .self$p      <- c(head(.self$p, -1), spmat@p + tail(.self$p, 1))
+      .self$p      <- c(head(.self$p, -1), spmat@p + 0 + tail(.self$p, 1))
       .self$extptr <- NIL_PTR
 
       .self

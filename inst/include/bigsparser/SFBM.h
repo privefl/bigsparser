@@ -23,7 +23,7 @@ struct indval {
 // Read/write memory-mapping
 class SFBM {
 public:
-  SFBM(std::string path, int n, int m, std::vector<int> p) : n(n), m(m), p(p) {
+  SFBM(std::string path, int n, int m, std::vector<size_t> p) : n(n), m(m), p(p) {
 
     std::error_code error;
     this->ro_mmap.map(path, error);
@@ -97,7 +97,7 @@ private:
   const indval * data;
   int n;
   int m;
-  std::vector<int> p;
+  std::vector<size_t> p;
 };
 
 /******************************************************************************/

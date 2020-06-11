@@ -7,7 +7,7 @@
 using namespace Rcpp;
 
 // getXPtrSFBM
-SEXP getXPtrSFBM(std::string path, int n, int m, std::vector<int> p);
+SEXP getXPtrSFBM(std::string path, int n, int m, std::vector<size_t> p);
 RcppExport SEXP _bigsparser_getXPtrSFBM(SEXP pathSEXP, SEXP nSEXP, SEXP mSEXP, SEXP pSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -15,7 +15,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string >::type path(pathSEXP);
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    Rcpp::traits::input_parameter< std::vector<int> >::type p(pSEXP);
+    Rcpp::traits::input_parameter< std::vector<size_t> >::type p(pSEXP);
     rcpp_result_gen = Rcpp::wrap(getXPtrSFBM(path, n, m, p));
     return rcpp_result_gen;
 END_RCPP
