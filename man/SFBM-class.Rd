@@ -43,6 +43,7 @@ data of the SFBM
 And some methods:
 \itemize{
 \item \verb{$save()}: Save the SFBM object in \verb{$rds}. Returns the SFBM.
+\item \verb{$add_columns()}: Add new columns from another sparse dgCMatrix.
 }
 }
 

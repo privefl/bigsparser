@@ -13,7 +13,7 @@ void write_indval(const char * filename,
                   const IntegerVector& i,
                   const NumericVector& x) {
 
-  ofstream myFile(filename, ios::out | ios::binary);
+  ofstream myFile(filename, ios::out | ios::app | ios::binary);
 
   const int *    pI = i.begin();
   const double * pX = x.begin();

@@ -25,9 +25,11 @@ NIL_PTR <- methods::new("externalptr")
 #'
 #' And some methods:
 #'   - `$save()`: Save the SFBM object in `$rds`. Returns the SFBM.
+#'   - `$add_columns()`: Add new columns from another sparse dgCMatrix.
 #'
-#' @importFrom bigassertr assert_class assert_noexist assert_dir
+#' @importFrom bigassertr assert_class assert_exist assert_noexist assert_dir assert_pos
 #' @importFrom methods new
+#' @importFrom utils head tail
 #'
 #' @exportClass SFBM
 #'
@@ -38,8 +40,6 @@ SFBM_RC <- methods::setRefClass(
   fields = list(
     extptr = "externalptr",
     nrow = "numeric",
-    ncol = "numeric",
-    nval = "numeric",
     p = "integer",
     backingfile = "character",
 
@@ -58,6 +58,9 @@ SFBM_RC <- methods::setRefClass(
       .self$extptr
     },
 
+    ncol = function() length(.self$p) - 1L,
+    nval = function() tail(.self$p, 1),
+
     sbk = function() .self$backingfile,
     rds = function() sub("\\.sbk$", ".rds", .self$sbk),
     is_saved = function() file.exists(.self$rds)
@@ -67,24 +70,38 @@ SFBM_RC <- methods::setRefClass(
     initialize = function(spmat, backingfile) {
 
       sbkfile <- path.expand(paste0(backingfile, ".sbk"))
-
       assert_noexist(sbkfile)
       assert_dir(dirname(sbkfile))
 
       write_indval(sbkfile, spmat@i, spmat@x)
 
-      .self$backingfile  <- normalizePath(sbkfile)
-      .self$nrow         <- spmat@Dim[1]
-      .self$ncol         <- spmat@Dim[2]
-      .self$nval         <- length(spmat@x)
-      .self$p            <- spmat@p
-      .self$extptr       <- NIL_PTR
+      .self$backingfile <- normalizePath(sbkfile)
+      .self$nrow        <- spmat@Dim[1]
+      .self$p           <- spmat@p
+      .self$extptr      <- NIL_PTR
 
       .self
     },
 
     save = function() {
       saveRDS(.self, .self$rds)
+      .self
+    },
+
+    add_columns = function(spmat, offset_i) {
+
+      assert_class(spmat, "dgCMatrix")
+      assert_pos(offset_i, strict = FALSE)
+
+      sbkfile <- .self$sbk
+      assert_exist(sbkfile)
+
+      write_indval(sbkfile, spmat@i + as.integer(offset_i), spmat@x)
+
+      .self$nrow   <- max(.self$nrow, spmat@Dim[1] + offset_i)
+      .self$p      <- c(head(.self$p, -1), spmat@p + tail(.self$p, 1))
+      .self$extptr <- NIL_PTR
+
       .self
     },
 
@@ -96,7 +113,6 @@ SFBM_RC <- methods::setRefClass(
     }
   )
 )
-SFBM_RC$lock("nrow")
 
 ################################################################################
 
