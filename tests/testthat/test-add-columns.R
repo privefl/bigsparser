@@ -10,8 +10,9 @@ test_that("$add_columns() works", {
   sfbm$add_columns(spmat[, 11:20], offset_i = 0)
   sfbm$add_columns(spmat[, 21:30], offset_i = 0)
   expect_equal(dim(sfbm), c(30, 30))
+  expect_equal(sfbm$p, as(spmat, "dgCMatrix")@p)
 
-  b <- rep(1, ncol(sfbm))
+  b <- runif(ncol(sfbm))
   expect_equal(sp_prodVec(sfbm, b), as.vector(spmat %*% b))
   expect_equal(sp_solve_sym(sfbm, b, add_to_diag = 1e-4),
                as.vector(solve(spmat + Diagonal(ncol(spmat), 1e-4), b)))
