@@ -1,34 +1,38 @@
 /******************************************************************************/
 
-#include <Rcpp.h>
-#include <fstream>
+#include <rmio/create-file.hpp>
+#include <bigsparser/SFBM.h>
 
 using namespace Rcpp;
-using namespace std;
 
 /******************************************************************************/
 
 // [[Rcpp::export]]
-void write_indval(const char * filename,
+void write_indval(std::string filename,
                   const IntegerVector& i,
-                  const NumericVector& x) {
-
-  ofstream myFile(filename, ios::out | ios::app | ios::binary);
+                  const NumericVector& x,
+                  size_t offset) {
 
   size_t K = i.size();
 
-  double dbl_i = 0, dbl_x = 0;
-  const char * ptr_char_i = reinterpret_cast<const char*>(&dbl_i);
-  const char * ptr_char_x = reinterpret_cast<const char*>(&dbl_x);
-
-  for (size_t k = 0; k < K; k++) {
-    dbl_i = i[k];
-    myFile.write(ptr_char_i, 8);
-    dbl_x = x[k];
-    myFile.write(ptr_char_x, 8);
+  if (offset == 0) {
+    create_file(filename.c_str(), K, 16);
+  } else {
+    append_file(filename.c_str(), K, 16);
   }
 
-  myFile.close();
+  mio::mmap_sink rw_mmap;
+  std::error_code error;
+  rw_mmap.map(filename, error);
+  if (error) Rcpp::stop("Error when mapping file:\n  %s.\n", error.message());
+
+  double * data = reinterpret_cast<double*>(rw_mmap.data());
+
+  size_t k2 = 2 * offset;
+  for (size_t k = 0; k < K; k++) {
+    data[k2++] = i[k];
+    data[k2++] = x[k];
+  }
 }
 
 /******************************************************************************/

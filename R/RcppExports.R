@@ -17,7 +17,7 @@ sp_solve_sym_eigen <- function(X, b, add_to_diag, tol, maxiter) {
     .Call(`_bigsparser_sp_solve_sym_eigen`, X, b, add_to_diag, tol, maxiter)
 }
 
-write_indval <- function(filename, i, x) {
-    invisible(.Call(`_bigsparser_write_indval`, filename, i, x))
+write_indval <- function(filename, i, x, offset) {
+    invisible(.Call(`_bigsparser_write_indval`, filename, i, x, offset))
 }
 
