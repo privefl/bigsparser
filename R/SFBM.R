@@ -73,7 +73,7 @@ SFBM_RC <- methods::setRefClass(
       assert_noexist(sbkfile)
       assert_dir(dirname(sbkfile))
 
-      write_indval(sbkfile, spmat@i, spmat@x)
+      write_indval(sbkfile, spmat@i, spmat@x, 0L)
 
       .self$backingfile <- normalizePath(sbkfile)
       .self$nrow        <- spmat@Dim[1]
@@ -96,10 +96,11 @@ SFBM_RC <- methods::setRefClass(
       sbkfile <- .self$sbk
       assert_exist(sbkfile)
 
-      write_indval(sbkfile, spmat@i + as.integer(offset_i), spmat@x)
+      offset_p <- tail(.self$p, 1)
+      write_indval(sbkfile, spmat@i + as.integer(offset_i), spmat@x, offset_p)
 
       .self$nrow   <- max(.self$nrow, spmat@Dim[1] + offset_i)
-      .self$p      <- c(head(.self$p, -1), spmat@p + 0 + tail(.self$p, 1))
+      .self$p      <- c(head(.self$p, -1), spmat@p + 0 + offset_p)
       .self$extptr <- NIL_PTR
 
       .self

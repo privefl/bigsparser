@@ -1,6 +1,6 @@
 Package: bigsparser
 Title: Sparse Matrix Format with Data on Disk
-Version: 0.2.3
+Version: 0.3.1
 Authors@R: 
     person(given = "Florian",
            family = "Privé",
@@ -18,10 +18,11 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.0.2
 URL: https://github.com/privefl/bigsparser
 BugReports: https://github.com/privefl/bigsparser/issues
+Remotes: privefl/rmio
 LinkingTo: 
     Rcpp,
     RcppEigen,
-    rmio
+    rmio (>= 0.2)
 Imports: 
     Rcpp,
     bigassertr,

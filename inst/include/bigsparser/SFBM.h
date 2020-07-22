@@ -13,14 +13,6 @@
 
 /******************************************************************************/
 
-struct indval {
-  double i;
-  double x;
-};
-
-/******************************************************************************/
-
-// Read/write memory-mapping
 class SFBM {
 public:
   SFBM(std::string path, int n, int m, std::vector<size_t> p) : n(n), m(m), p(p) {
@@ -29,21 +21,7 @@ public:
     this->ro_mmap.map(path, error);
     if (error) Rcpp::stop("Error when mapping file:\n  %s.\n", error.message());
 
-    this->data = reinterpret_cast<const indval*>(ro_mmap.data());
-    // Rcpp::Rcout << data->i << " // " << data->x << std::endl;
-    // Rcpp::Rcout << (data + 1)->i << " // " << (data + 1)->x << std::endl;
-    // Rcpp::Rcout << sizeof(data) << std::endl;
-
-    // const char* data2 = ro_mmap.data();
-    //
-    // Rcpp::Rcout << *reinterpret_cast<const int*>(data2) << " // " ;
-    // data2 += 4;
-    // Rcpp::Rcout << *reinterpret_cast<const double*>(data2) << std::endl;
-    // data2 += 8;
-    // Rcpp::Rcout << *reinterpret_cast<const int*>(data2) << " // " ;
-    // data2 += 4;
-    // Rcpp::Rcout << *reinterpret_cast<const double*>(data2) << std::endl;
-    // data2 += 8;
+    this->data = reinterpret_cast<const double*>(ro_mmap.data());
   }
 
   size_t nrow() const { return n; }
@@ -57,11 +35,13 @@ public:
 
     for (int j = 0; j < m; j++) {
 
-      auto lo = data + p[j];
-      auto up = data + p[j + 1];
+      size_t lo = 2 * p[j];
+      size_t up = 2 * p[j + 1];
 
-      for (auto it = lo; it != up; it++) {
-        res[it->i] += it->x * x[j];
+      for (size_t k = lo; k < up; k += 2) {
+        int ind    = data[k];
+        double val = data[k + 1];
+        res[ind] += val * x[j];
       }
     }
 
@@ -82,19 +62,22 @@ public:
   template<class C>
   double dot_col(int j, const C& x) {
 
-    auto lo = data + p[j];
-    auto up = data + p[j + 1];
+    size_t lo = 2 * p[j];
+    size_t up = 2 * p[j + 1];
 
     double cp = 0;
-    for (auto it = lo; it != up; it++)
-      cp += it->x * x[it->i];
+    for (size_t k = lo; k < up; k += 2) {
+      int ind    = data[k];
+      double val = data[k + 1];
+      cp += val * x[ind];
+    }
 
     return cp;
   }
 
 private:
   mio::mmap_source ro_mmap;
-  const indval * data;
+  const double * data;
   int n;
   int m;
   std::vector<size_t> p;
