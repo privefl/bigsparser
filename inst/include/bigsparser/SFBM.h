@@ -39,7 +39,7 @@ public:
       size_t up = 2 * p[j + 1];
 
       for (size_t k = lo; k < up; k += 2) {
-        int ind    = data[k];
+        int    ind = data[k];
         double val = data[k + 1];
         res[ind] += val * x[j];
       }
@@ -67,7 +67,7 @@ public:
 
     double cp = 0;
     for (size_t k = lo; k < up; k += 2) {
-      int ind    = data[k];
+      int    ind = data[k];
       double val = data[k + 1];
       cp += val * x[ind];
     }
