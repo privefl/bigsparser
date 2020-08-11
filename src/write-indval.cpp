@@ -14,11 +14,12 @@ using namespace Rcpp;
 void write_indval(std::string filename,
                   const IntegerVector& i,
                   const NumericVector& x,
-                  size_t offset) {
+                  size_t offset_p,
+                  int offset_i = 0) {
 
   size_t K = i.size();
 
-  if (offset == 0) {
+  if (offset_p == 0) {
     create_file(filename.c_str(), K, 16);
   } else {
     append_file(filename.c_str(), K, 16);
@@ -31,9 +32,9 @@ void write_indval(std::string filename,
 
   double * data = reinterpret_cast<double*>(rw_mmap.data());
 
-  size_t k2 = 2 * offset;
+  size_t k2 = 2 * offset_p;
   for (size_t k = 0; k < K; k++) {
-    data[k2++] = i[k];
+    data[k2++] = i[k] + offset_i;
     data[k2++] = x[k];
   }
 }
@@ -68,22 +69,23 @@ NumericVector write_indval_sym(std::string filename,
                                std::vector<size_t> p,
                                const IntegerVector& i,
                                const NumericVector& x,
-                               size_t offset) {
+                               size_t offset_p,
+                               int offset_i = 0) {
 
   IntegerVector count = col_count_sym(p, i);
   int m = count.size();
 
   std::vector<size_t> data_offset(m);
-  size_t K = offset;
+  size_t K = offset_p;
   for (int j = 0; j < m; j++) {
     K += count[j];
     data_offset[j] = 2 * K;
   }
 
-  if (offset == 0) {
+  if (offset_p == 0) {
     create_file(filename.c_str(), K, 16);
   } else {
-    append_file(filename.c_str(), K - offset, 16);
+    append_file(filename.c_str(), K - offset_p, 16);
   }
 
   mio::mmap_sink rw_mmap;
@@ -95,43 +97,26 @@ NumericVector write_indval_sym(std::string filename,
 
   for (int j = m - 1; j >= 0; j--) {
 
-    // Rcout << "---- j = " << j << " ----" << std::endl;
-
     size_t lo = p[j];
     size_t up = p[j + 1];
     if (up == 0) continue;  // cannot have -1 with size_t
 
     for (size_t k = up - 1; k >= lo; k--) {
 
-      // if (j == 0) Rcout << "k = " << k << std::endl;
-
       int    ind = i[k];
       double val = x[k];
 
       // write (i, j, x)
       size_t where = data_offset[j];
-      // if (where > 1000 || where < 2) {
-      //   Rcout << "j=" << j << " // " << "lo=" << lo << " // " << "up=" << up <<
-      //     " // " << "where=" << where << std::endl;
-      //   for (int j = 0; j < m; j++) Rcout << data_offset[j] / 2 << " ";
-      //   Rcout << std::endl;
-      //   stop("Something went wrong");
-      // }
       data[--where] = val;
-      data[--where] = ind;
+      data[--where] = ind + offset_i;
       data_offset[j] = where;
-      // if (where == 0) {
-      //   Rcout << "j=" << j << " // " << "lo=" << lo << " // " << "up=" << up <<
-      //     " // " << "where=" << where << std::endl;
-      //   for (int j = 0; j < m; j++) Rcout << data_offset[j] / 2 << " ";
-      //   Rcout << std::endl;
-      // }
 
       if (ind != j) {
         // write (j, i, x)
         where = data_offset[ind];
         data[--where] = val;
-        data[--where] = j;
+        data[--where] = j + offset_i;
         data_offset[ind] = where;
       }
 

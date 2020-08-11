@@ -89,10 +89,3 @@ true <- bigsparser::as_SFBM(as(spmat, "dgCMatrix"), backingfile = tmp)
 readBin(true$sbk, what = 1, n = 1000)
 all.equal(readBin(tmp,      what = 1, n = 1000),
           readBin(true$sbk, what = 1, n = 1000))
-
-
-sfbm <- as_SFBM(spmat)
-dim(sfbm)
-sfbm$add_columns(spmat, 0)
-dim(sfbm)
-sfbm$add_columns(spmat, 10)

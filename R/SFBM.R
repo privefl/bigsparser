@@ -27,7 +27,8 @@ NIL_PTR <- methods::new("externalptr")
 #'   - `$save()`: Save the SFBM object in `$rds`. Returns the SFBM.
 #'   - `$add_columns()`: Add new columns from another sparse dgCMatrix.
 #'
-#' @importFrom bigassertr assert_class assert_exist assert_noexist assert_dir assert_pos
+#' @importFrom bigassertr assert_exist assert_noexist assert_dir
+#' @importFrom bigassertr assert_class assert_pos assert_one_int stop2
 #' @importFrom methods new
 #' @importFrom utils head tail
 #'
@@ -67,17 +68,21 @@ SFBM_RC <- methods::setRefClass(
   ),
 
   methods = list(
-    initialize = function(spmat, backingfile) {
+    initialize = function(spmat, backingfile, symmetric = FALSE) {
 
       sbkfile <- path.expand(paste0(backingfile, ".sbk"))
       assert_noexist(sbkfile)
       assert_dir(dirname(sbkfile))
 
-      write_indval(sbkfile, spmat@i, spmat@x, 0L)
+      if (symmetric) {
+        new_p <- write_indval_sym(sbkfile, spmat@p, spmat@i, spmat@x, 0L)
+      } else {
+        write_indval(sbkfile, spmat@i, spmat@x, 0L)
+      }
 
       .self$backingfile <- normalizePath(sbkfile)
       .self$nrow        <- spmat@Dim[1]
-      .self$p           <- spmat@p
+      .self$p           <- `if`(symmetric, new_p, spmat@p)
       .self$extptr      <- NIL_PTR
 
       .self
@@ -90,17 +95,27 @@ SFBM_RC <- methods::setRefClass(
 
     add_columns = function(spmat, offset_i) {
 
-      assert_class(spmat, "dgCMatrix")
+      if (!inherits(spmat, "dgCMatrix") && !inherits(spmat, "dsCMatrix"))
+        stop2("Only classes 'dgCMatrix' and 'dsCMatrix' are currently implemented.")
+
+      assert_one_int(offset_i)
       assert_pos(offset_i, strict = FALSE)
 
       sbkfile <- .self$sbk
       assert_exist(sbkfile)
 
       offset_p <- tail(.self$p, 1)
-      write_indval(sbkfile, spmat@i + as.integer(offset_i), spmat@x, offset_p)
+
+      if (inherits(spmat, "dsCMatrix")) {
+        new_p <- write_indval_sym(sbkfile, spmat@p, spmat@i, spmat@x,
+                                  offset_p, offset_i)
+      } else {
+        write_indval(sbkfile, spmat@i, spmat@x, offset_p, offset_i)
+        new_p <- spmat@p + 0 + offset_p
+      }
 
       .self$nrow   <- max(.self$nrow, spmat@Dim[1] + offset_i)
-      .self$p      <- c(head(.self$p, -1), spmat@p + 0 + offset_p)
+      .self$p      <- c(head(.self$p, -1), new_p)
       .self$extptr <- NIL_PTR
 
       .self
@@ -119,9 +134,10 @@ SFBM_RC <- methods::setRefClass(
 
 #' Convert to SFBM
 #'
-#' Convert a dgCMatrix to an SFBM.
+#' Convert a dgCMatrix or dsCMatrix to an SFBM.
 #'
-#' @param spmat A dgCMatrix (non-symmetric sparse matrix of type 'double').
+#' @param spmat A dgCMatrix (non-symmetric sparse matrix of type 'double')
+#'   or dsCMatrix (symmetric sparse matrix of type 'double').
 #' @param backingfile Path to file where to store data. Extension `.sbk` is
 #'   automatically added.
 #'
@@ -137,9 +153,17 @@ SFBM_RC <- methods::setRefClass(
 #'
 as_SFBM <- function(spmat, backingfile = tempfile()) {
 
-  assert_class(spmat, "dgCMatrix")
+  if (inherits(spmat, "dgCMatrix")) {
+    sym <- FALSE
+  } else if (inherits(spmat, "dsCMatrix")) {
+    sym <- TRUE
+    if (!identical(spmat@uplo, "U"))
+      stop2("Only upper-triangle symmetric matrices are implemented.")
+  } else {
+    stop2("Only classes 'dgCMatrix' and 'dsCMatrix' are currently implemented.")
+  }
 
-  new("SFBM", spmat = spmat, backingfile = backingfile)
+  new("SFBM", spmat = spmat, backingfile = backingfile, symmetric = sym)
 }
 
 ################################################################################
