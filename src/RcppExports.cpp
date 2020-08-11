@@ -60,16 +60,45 @@ BEGIN_RCPP
 END_RCPP
 }
 // write_indval
-void write_indval(std::string filename, const IntegerVector& i, const NumericVector& x, size_t offset);
-RcppExport SEXP _bigsparser_write_indval(SEXP filenameSEXP, SEXP iSEXP, SEXP xSEXP, SEXP offsetSEXP) {
+void write_indval(std::string filename, const IntegerVector& i, const NumericVector& x, size_t offset_p, int offset_i);
+RcppExport SEXP _bigsparser_write_indval(SEXP filenameSEXP, SEXP iSEXP, SEXP xSEXP, SEXP offset_pSEXP, SEXP offset_iSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type filename(filenameSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type i(iSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< size_t >::type offset(offsetSEXP);
-    write_indval(filename, i, x, offset);
+    Rcpp::traits::input_parameter< size_t >::type offset_p(offset_pSEXP);
+    Rcpp::traits::input_parameter< int >::type offset_i(offset_iSEXP);
+    write_indval(filename, i, x, offset_p, offset_i);
     return R_NilValue;
+END_RCPP
+}
+// col_count_sym
+IntegerVector col_count_sym(std::vector<size_t> p, const IntegerVector& i);
+RcppExport SEXP _bigsparser_col_count_sym(SEXP pSEXP, SEXP iSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<size_t> >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type i(iSEXP);
+    rcpp_result_gen = Rcpp::wrap(col_count_sym(p, i));
+    return rcpp_result_gen;
+END_RCPP
+}
+// write_indval_sym
+NumericVector write_indval_sym(std::string filename, std::vector<size_t> p, const IntegerVector& i, const NumericVector& x, size_t offset_p, int offset_i);
+RcppExport SEXP _bigsparser_write_indval_sym(SEXP filenameSEXP, SEXP pSEXP, SEXP iSEXP, SEXP xSEXP, SEXP offset_pSEXP, SEXP offset_iSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< std::vector<size_t> >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type i(iSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< size_t >::type offset_p(offset_pSEXP);
+    Rcpp::traits::input_parameter< int >::type offset_i(offset_iSEXP);
+    rcpp_result_gen = Rcpp::wrap(write_indval_sym(filename, p, i, x, offset_p, offset_i));
+    return rcpp_result_gen;
 END_RCPP
 }
 
@@ -78,7 +107,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_bigsparser_prodVec", (DL_FUNC) &_bigsparser_prodVec, 2},
     {"_bigsparser_cprodVec", (DL_FUNC) &_bigsparser_cprodVec, 2},
     {"_bigsparser_sp_solve_sym_eigen", (DL_FUNC) &_bigsparser_sp_solve_sym_eigen, 5},
-    {"_bigsparser_write_indval", (DL_FUNC) &_bigsparser_write_indval, 4},
+    {"_bigsparser_write_indval", (DL_FUNC) &_bigsparser_write_indval, 5},
+    {"_bigsparser_col_count_sym", (DL_FUNC) &_bigsparser_col_count_sym, 2},
+    {"_bigsparser_write_indval_sym", (DL_FUNC) &_bigsparser_write_indval_sym, 6},
     {NULL, NULL, 0}
 };
 

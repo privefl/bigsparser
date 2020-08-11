@@ -4,7 +4,7 @@
 
 For now, only a few features are implemented:
 
-- convert a dgCMatrix to an SFBM, a Sparse Filebacked Big Matrix
+- convert a dgCMatrix or a dsCMatrix to an SFBM, a Sparse Filebacked Big Matrix
 
 - compute the product and crossproduct of an SFBM with a vector
 
