@@ -66,7 +66,15 @@ public:
     size_t up = 2 * p[j + 1];
 
     double cp = 0;
-    for (size_t k = lo; k < up; k += 2) {
+    size_t k = lo;
+
+    if (up >= (lo + 8)) {
+      for (; k <= (up - 8); k += 8) {  // unrolling optimization
+        cp += (data[k + 1] * x[data[k]] + data[k + 3] * x[data[k + 2]]) +
+          (data[k + 5] * x[data[k + 4]] + data[k + 7] * x[data[k + 6]]);
+      }
+    }
+    for (; k < up; k += 2) {
       int    ind = data[k];
       double val = data[k + 1];
       cp += val * x[ind];

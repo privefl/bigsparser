@@ -86,7 +86,8 @@ struct generic_product_impl<MatrixReplacement, Rhs, SparseShape, DenseShape, Gem
     assert(alpha==Scalar(1) && "scaling is not implemented");
     EIGEN_ONLY_USED_FOR_DEBUG(alpha);
 
-    dst.noalias() += (lhs.matrix())->prod<Eigen::VectorXd>(rhs) +
+    // Use cprod because matrix is symmetric (and should be faster than prod)
+    dst.noalias() += (lhs.matrix())->cprod<Eigen::VectorXd>(rhs) +
       (lhs.extra()).cwiseProduct(rhs);
   }
 };
