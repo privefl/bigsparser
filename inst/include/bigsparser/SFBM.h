@@ -35,13 +35,18 @@ public:
 
     for (int j = 0; j < m; j++) {
 
-      size_t lo = 2 * p[j];
-      size_t up = 2 * p[j + 1];
+      double x_j = x[j];
 
-      for (size_t k = lo; k < up; k += 2) {
-        int    ind = data[k];
-        double val = data[k + 1];
-        res[ind] += val * x[j];
+      if (x_j != 0) {
+
+        size_t lo = 2 * p[j];
+        size_t up = 2 * p[j + 1];
+
+        for (size_t k = lo; k < up; k += 2) {
+          int    ind = data[k];
+          double val = data[k + 1];
+          res[ind] += val * x_j;
+        }
       }
     }
 
