@@ -1,6 +1,6 @@
 Package: bigsparser
 Title: Sparse Matrix Format with Data on Disk
-Version: 0.4.2
+Version: 0.4.3
 Authors@R: 
     person(given = "Florian",
            family = "Privé",

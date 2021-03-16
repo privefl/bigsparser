@@ -88,6 +88,21 @@ public:
     return cp;
   }
 
+  template<class C>
+  C& incr_mult_col(int j, C& x, double coef) {
+
+    size_t lo = 2 * p[j];
+    size_t up = 2 * p[j + 1];
+
+    for (size_t k = lo; k < up; k += 2) {
+      int    ind = data[k];
+      double val = data[k + 1];
+      x[ind] += val * coef;
+    }
+
+    return x;
+  }
+
 private:
   mio::mmap_source ro_mmap;
   const double * data;
