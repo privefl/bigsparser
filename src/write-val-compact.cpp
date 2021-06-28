@@ -123,7 +123,10 @@ List write_val_compact(std::string filename,
     }
   }
 
-  return List::create(first_i + offset_i, new_p);
+  for (int j = 0; j < m; j++)
+    if (first_i[j] >= 0) first_i[j] += offset_i;
+
+  return List::create(first_i, new_p);
 }
 
 /******************************************************************************/

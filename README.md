@@ -10,6 +10,8 @@ For now, only a few features are implemented:
 
 - solve Ax=b, where A is a symmetric SFBM and b is a vector
 
+A **new compact format** is available, which is useful when non-zero values in columns are contiguous (or almost).
+
 ### Installation
 
 ```r

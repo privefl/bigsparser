@@ -77,13 +77,13 @@ test_that("can create an SFBM_compact from a dsCMatrix", {
 
 ################################################################################
 
-# test_that("products between an SFBM_compact and a vector work", {
-#
-#   spmat <- Matrix::rsparsematrix(1000, 1000, 0.1)
-#   X <- as_SFBM(spmat, compact = TRUE)
-#   y <- runif(1000)
-#   expect_equal(sp_prodVec(X, y), as.vector(spmat %*% y))
-#   expect_equal(sp_cprodVec(X, y), as.vector(Matrix::crossprod(spmat, y)))
-# })
+test_that("products between an SFBM_compact and a vector work", {
+
+  spmat <- Matrix::rsparsematrix(1000, 1000, 0.1)
+  X <- as_SFBM(spmat, compact = TRUE)
+  y <- runif(1000)
+  expect_equal(sp_prodVec(X, y), as.vector(spmat %*% y))
+  expect_equal(sp_cprodVec(X, y), as.vector(Matrix::crossprod(spmat, y)))
+})
 
 ################################################################################

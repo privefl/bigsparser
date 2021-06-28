@@ -103,12 +103,93 @@ public:
     return x;
   }
 
-private:
+protected:
   mio::mmap_source ro_mmap;
   const double * data;
   int n;
   int m;
   std::vector<size_t> p;
+};
+
+/******************************************************************************/
+
+class SFBM_compact : public SFBM {
+public:
+  SFBM_compact(std::string path, int n, int m, std::vector<size_t> p,
+               std::vector<int> first_i)
+  : SFBM(path, n, m, p), first_i(first_i) {}
+
+  template<class C>
+  C prod(const C& x) {
+
+    C res(n);
+    for (int i = 0; i < n; i++) res[i] = 0;
+
+    for (int j = 0; j < m; j++) {
+
+      double x_j = x[j];
+
+      if (x_j != 0) {
+
+        size_t lo = p[j];
+        size_t up = p[j + 1];
+        int i = first_i[j];
+
+        for (size_t k = lo; k < up; k++, i++)
+          res[i] += data[k] * x_j;
+      }
+    }
+
+    return res;
+  }
+
+  template<class C>
+  C cprod(const C& x) {
+
+    C res(m);
+
+    for (int j = 0; j < m; j++)
+      res[j] = dot_col(j, x);
+
+    return res;
+  }
+
+  template<class C>
+  double dot_col(int j, const C& x) {
+
+    size_t lo = p[j];
+    size_t up = p[j + 1];
+
+    double cp = 0;
+    size_t k = lo;
+    int i = first_i[j];
+
+    if (up >= (lo + 4)) {
+      for (; k <= (up - 4); k += 4, i += 4) {  // unrolling optimization
+        cp += (data[k] * x[i] + data[k + 1] * x[i + 1]) +
+          (data[k + 2] * x[i + 2] + data[k + 3] * x[i + 3]);
+      }
+    }
+    for (; k < up; k++, i++) cp += data[k] * x[i];
+
+    return cp;
+  }
+
+  template<class C>
+  C& incr_mult_col(int j, C& x, double coef) {
+
+    size_t lo = p[j];
+    size_t up = p[j + 1];
+    int i = first_i[j];
+
+    for (size_t k = lo; k < up; k++, i++)
+      x[i] += data[k] * coef;
+
+    return x;
+  }
+
+private:
+  std::vector<int> first_i;
 };
 
 /******************************************************************************/
