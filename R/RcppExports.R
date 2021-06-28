@@ -5,6 +5,10 @@ getXPtrSFBM <- function(path, n, m, p) {
     .Call(`_bigsparser_getXPtrSFBM`, path, n, m, p)
 }
 
+getXPtrSFBM_compact <- function(path, n, m, p, first_i) {
+    .Call(`_bigsparser_getXPtrSFBM_compact`, path, n, m, p, first_i)
+}
+
 prodVec <- function(X, y) {
     .Call(`_bigsparser_prodVec`, X, y)
 }
@@ -27,5 +31,17 @@ col_count_sym <- function(p, i) {
 
 write_indval_sym <- function(filename, p, i, x, offset_p, offset_i = 0L) {
     .Call(`_bigsparser_write_indval_sym`, filename, p, i, x, offset_p, offset_i)
+}
+
+range_col <- function(p, i) {
+    .Call(`_bigsparser_range_col`, p, i)
+}
+
+range_col_sym <- function(p, i) {
+    .Call(`_bigsparser_range_col_sym`, p, i)
+}
+
+write_val_compact <- function(filename, p, i, x, offset_p, offset_i, symmetric) {
+    .Call(`_bigsparser_write_val_compact`, filename, p, i, x, offset_p, offset_i, symmetric)
 }
 

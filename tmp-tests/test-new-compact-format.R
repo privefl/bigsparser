@@ -41,3 +41,20 @@ plot(ranges); abline(0, 1, col = "red")
 ranges_true <- t(apply(corr, 2, function(x) range(which(x != 0))))
 plot(ranges_true)
 identical(ranges + 1L, ranges_true)
+
+
+Rcpp::sourceCpp('src/write-val-compact.cpp')
+
+write_val_compact(tmp <- tempfile(), corr2@p, corr2@i, corr2@x,
+                  offset_p = 0, offset_i = 0, symmetric = FALSE)
+corr2
+readBin(tmp, what = 1, n = 100)
+
+(corr3 <- Matrix::forceSymmetric(corr2))
+
+range_col_sym(corr3@p, corr3@i)
+
+write_val_compact(tmp <- tempfile(), corr3@p, corr3@i, corr3@x,
+                  offset_p = 0, offset_i = 0, symmetric = TRUE)
+corr3
+readBin(tmp, what = 1, n = 100)
