@@ -13,14 +13,14 @@
 #include <RcppEigen.h>
 #include <bigsparser/SFBM.h>
 
-template <class C> class MatrixReplacement;
+class MatrixReplacement;
 
 /******************************************************************************/
 
 namespace Eigen {
 namespace internal {
 // MatrixReplacement looks-like a SparseMatrix, so let's inherits its traits:
-template <class C> struct traits< MatrixReplacement<C> > :
+template<> struct traits<MatrixReplacement> :
   public Eigen::internal::traits< Eigen::SparseMatrix<double> > {};
 }
 }
@@ -28,11 +28,9 @@ template <class C> struct traits< MatrixReplacement<C> > :
 /******************************************************************************/
 
 // Example of a matrix-free wrapper from a user type to Eigen's compatible type
-template <class C>
-class MatrixReplacement : public Eigen::EigenBase< MatrixReplacement<C> > {
+class MatrixReplacement : public Eigen::EigenBase<MatrixReplacement> {
 public:
   // Required typedefs, constants, and method:
-  typedef typename Eigen::EigenBase<MatrixReplacement<C> >::Index Index;
   typedef double Scalar;
   typedef double RealScalar;
   typedef int StorageIndex;
@@ -46,23 +44,23 @@ public:
   Index cols() const { return sfbm->ncol(); }
 
   template<typename Rhs>
-  Eigen::Product<MatrixReplacement<C>, Rhs, Eigen::AliasFreeProduct>
+  Eigen::Product<MatrixReplacement, Rhs, Eigen::AliasFreeProduct>
   operator*(const Eigen::MatrixBase<Rhs>& x) const {
-    return Eigen::Product<MatrixReplacement<C>, Rhs, Eigen::AliasFreeProduct>(*this, x.derived());
+    return Eigen::Product<MatrixReplacement, Rhs, Eigen::AliasFreeProduct>(*this, x.derived());
   }
 
   // Custom API:
-  MatrixReplacement(C * sfbm) :
+  MatrixReplacement(SFBM * sfbm) :
     sfbm(sfbm), add_to_diag(Eigen::VectorXd::Zero(sfbm->ncol())) {}
 
-  MatrixReplacement(C * sfbm, const Eigen::VectorXd& add_to_diag) :
+  MatrixReplacement(SFBM * sfbm, const Eigen::VectorXd& add_to_diag) :
     sfbm(sfbm), add_to_diag(add_to_diag) {}
 
-  C * matrix() const { return sfbm; }
+  SFBM * matrix() const { return sfbm; }
   Eigen::VectorXd extra() const { return add_to_diag; }
 
 private:
-  C * sfbm;
+  SFBM * sfbm;
   const Eigen::VectorXd add_to_diag;
 };
 
@@ -73,14 +71,14 @@ private:
 namespace Eigen {
 namespace internal {
 
-template<class C, typename Rhs>
-struct generic_product_impl<MatrixReplacement<C>, Rhs, SparseShape, DenseShape, GemvProduct> // GEMV stands for matrix-vector
-  : generic_product_impl_base<MatrixReplacement<C>,Rhs,generic_product_impl<MatrixReplacement<C>,Rhs> >
+template<typename Rhs>
+struct generic_product_impl<MatrixReplacement, Rhs, SparseShape, DenseShape, GemvProduct> // GEMV stands for matrix-vector
+  : generic_product_impl_base<MatrixReplacement,Rhs,generic_product_impl<MatrixReplacement,Rhs> >
 {
-  typedef typename Product<MatrixReplacement<C>, Rhs>::Scalar Scalar;
+  typedef typename Product<MatrixReplacement,Rhs>::Scalar Scalar;
 
   template<typename Dest>
-  static void scaleAndAddTo(Dest& dst, const MatrixReplacement<C> & lhs, const Rhs& rhs, const Scalar& alpha)
+  static void scaleAndAddTo(Dest& dst, const MatrixReplacement& lhs, const Rhs& rhs, const Scalar& alpha)
   {
     // This method should implement "dst += alpha * lhs * rhs" inplace,
     // however, for iterative solvers, alpha is always equal to 1,
@@ -89,10 +87,8 @@ struct generic_product_impl<MatrixReplacement<C>, Rhs, SparseShape, DenseShape, 
     EIGEN_ONLY_USED_FOR_DEBUG(alpha);
 
     // Use cprod because matrix is symmetric (and should be faster than prod)
-    // template -> https://stackoverflow.com/a/37995805/6103040
-    C * sfbm_ptr = lhs.matrix();
-    dst.noalias() += sfbm_ptr->template cprod<Eigen::VectorXd>(rhs) +
-      lhs.extra().cwiseProduct(rhs);
+    dst.noalias() += (lhs.matrix())->cprod<Eigen::VectorXd>(rhs) +
+      (lhs.extra()).cwiseProduct(rhs);
   }
 };
 
