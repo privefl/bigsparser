@@ -4,9 +4,12 @@ test_that("can use SFBMs from old versions", {
 
   spmat <- Matrix::sparseMatrix(1, 2, x = 3, dims = c(3, 3))
   # saveRDS(bigsparser::as_SFBM(spmat), "inst/testdata/old_sfbm.rds", version = 2)
-  X <- readRDS(system.file("testdata/old_sfbm.rds", package = "bigsparser"))
-  expect_false(identical(X$address, methods::new("externalptr")))
-  expect_equal(sp_prodVec(X, rep(1, 3)), c(3, 0, 0))
+  test_file <- system.file("testdata/old_sfbm.rds", package = "bigsparser")
+  if (file.exists(test_file)) {
+    X <- readRDS(test_file)
+    expect_false(identical(X$address, methods::new("externalptr")))
+    expect_equal(sp_prodVec(X, rep(1, 3)), c(3, 0, 0))
+  }
 })
 
 ################################################################################
