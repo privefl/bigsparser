@@ -11,6 +11,6 @@ in files on disk, in a compact format (when non-zero values in columns are
 contiguous).
 }
 \details{
-It inherits the fields and methods from class \href{SFBM-class}{SFBM}.
+It inherits the fields and methods from class \link[=SFBM-class]{SFBM}.
 }
 

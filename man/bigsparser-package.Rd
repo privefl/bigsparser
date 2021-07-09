@@ -11,7 +11,7 @@ Provides a sparse matrix format with data stored on disk, to be
     data in C++ and also when parallelizing, since data on disk does not need
     copying. Only a limited number of features will be implemented. For now,
     conversion can be performed from a 'dgCMatrix' or a 'dsCMatrix' from R 
-    package 'Matrix'.
+    package 'Matrix'. A new compact format is also now available.
 }
 \seealso{
 Useful links:

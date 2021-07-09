@@ -196,7 +196,7 @@ setMethod("length", signature(x = "SFBM"), function(x) prod(dim(x)))
 #' contiguous).
 #'
 #' @details
-#' It inherits the fields and methods from class [SFBM](SFBM-class).
+#' It inherits the fields and methods from class [SFBM][SFBM-class].
 #'
 #' @importFrom bigassertr assert_exist assert_noexist assert_dir
 #' @importFrom bigassertr assert_class assert_pos assert_one_int stop2
