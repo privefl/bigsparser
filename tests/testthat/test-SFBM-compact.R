@@ -23,13 +23,18 @@ test_that("internal function work properly", {
   corr2[1, 4] <- 6
   corr2[3, 4] <- 7
 
-  test1 <- bigsparser:::range_col(corr2@p, corr2@i)
-  expect_equal(test1, list(c(-1, 1, 2, 0), c(-2, 3, 2, 3)))
+  col_range <- bigsparser:::range_col(corr2@p, corr2@i)
+  expect_equal(col_range, list(c(-1, 1, 2, 0), c(-2, 3, 2, 3)))
 
-  test2 <- bigsparser:::write_val_compact(
-    tmp <- tempfile(), corr2@p, corr2@i, corr2@x,
-    offset_p = 0, offset_i = 0, symmetric = FALSE)
-  expect_equal(test2, c(test1[1], list(c(0, 0, 3, 4, 8))))
+  first_i_  <- col_range[[1]]
+  col_count <- col_range[[2]] - first_i_ + 1L
+
+  tmp <- rmio::file_create(tempfile(), 8 * sum(col_count))
+
+  new_p <- bigsparser:::write_val_compact(
+    tmp, corr2@p, corr2@i, corr2@x,
+    first_i_, col_count, offset_p = 0, symmetric = FALSE)
+  expect_equal(new_p, c(0, 0, 3, 4, 8))
 
   expect_identical(readBin(tmp, what = 1, n = 100),
                    c(1, 0, 5, 2, 6, 0, 7, 3))
@@ -37,13 +42,19 @@ test_that("internal function work properly", {
 
   (corr3 <- Matrix::forceSymmetric(corr2))
 
-  test3 <- bigsparser:::range_col_sym(corr3@p, corr3@i)
-  expect_equal(test3, list(c(3, 1, 2, 0), c(3, 1, 3, 3)))
+  col_range2 <- bigsparser:::range_col_sym(corr3@p, corr3@i)
+  expect_equal(col_range2, list(c(3, 1, 2, 0), c(3, 1, 3, 3)))
 
-  test4 <- bigsparser:::write_val_compact(
-    tmp2 <- tempfile(), corr3@p, corr3@i, corr3@x,
-    offset_p = 0, offset_i = 0, symmetric = TRUE)
-  expect_equal(test4, c(test3[1], list(c(0, 1, 2, 4, 8))))
+  first_i_2  <- col_range2[[1]]
+  col_count2 <- col_range2[[2]] - first_i_2 + 1L
+  expect_equal(col_count2, c(1, 1, 2, 4))
+
+  tmp2 <- rmio::file_create(tempfile(), 8 * sum(col_count2))
+
+  new_p2 <- bigsparser:::write_val_compact(
+    tmp2, corr3@p, corr3@i, corr3@x,
+    first_i_2, col_count2, offset_p = 0, symmetric = TRUE)
+  expect_equal(new_p2, c(0, 1, 2, 4, 8))
 
   expect_identical(readBin(tmp2, what = 1, n = 100),
                    c(6, 1, 2, 7, 6, 0, 7, 3))
@@ -88,7 +99,9 @@ test_that("can create an SFBM_compact from a dsCMatrix", {
   X2 <- as_SFBM(spmat, compact = TRUE)
   expect_identical(readBin(X$sbk,  what = 1, n = 1e6),
                    readBin(X2$sbk, what = 1, n = 1e6))
-  expect_equal(dim(X), spmat@Dim)
+  expect_equal(X$p, X2$p)
+  expect_equal(dim(X),  spmat@Dim)
+  expect_equal(dim(X2), spmat@Dim)
 })
 
 ################################################################################

@@ -101,8 +101,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // write_indval_sym
-NumericVector write_indval_sym(std::string filename, std::vector<size_t> p, const IntegerVector& i, const NumericVector& x, size_t offset_p, int offset_i);
-RcppExport SEXP _bigsparser_write_indval_sym(SEXP filenameSEXP, SEXP pSEXP, SEXP iSEXP, SEXP xSEXP, SEXP offset_pSEXP, SEXP offset_iSEXP) {
+NumericVector write_indval_sym(std::string filename, std::vector<size_t> p, const IntegerVector& i, const NumericVector& x, const IntegerVector& col_count, size_t offset_p, int offset_i);
+RcppExport SEXP _bigsparser_write_indval_sym(SEXP filenameSEXP, SEXP pSEXP, SEXP iSEXP, SEXP xSEXP, SEXP col_countSEXP, SEXP offset_pSEXP, SEXP offset_iSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -110,50 +110,52 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::vector<size_t> >::type p(pSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type i(iSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type col_count(col_countSEXP);
     Rcpp::traits::input_parameter< size_t >::type offset_p(offset_pSEXP);
     Rcpp::traits::input_parameter< int >::type offset_i(offset_iSEXP);
-    rcpp_result_gen = Rcpp::wrap(write_indval_sym(filename, p, i, x, offset_p, offset_i));
+    rcpp_result_gen = Rcpp::wrap(write_indval_sym(filename, p, i, x, col_count, offset_p, offset_i));
     return rcpp_result_gen;
 END_RCPP
 }
 // range_col
-ListOf<IntegerVector> range_col(const std::vector<size_t>& p, const IntegerVector& i);
+ListOf<IntegerVector> range_col(std::vector<size_t> p, const IntegerVector& i);
 RcppExport SEXP _bigsparser_range_col(SEXP pSEXP, SEXP iSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const std::vector<size_t>& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< std::vector<size_t> >::type p(pSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type i(iSEXP);
     rcpp_result_gen = Rcpp::wrap(range_col(p, i));
     return rcpp_result_gen;
 END_RCPP
 }
 // range_col_sym
-ListOf<IntegerVector> range_col_sym(const std::vector<size_t>& p, const IntegerVector& i);
+ListOf<IntegerVector> range_col_sym(std::vector<size_t> p, const IntegerVector& i);
 RcppExport SEXP _bigsparser_range_col_sym(SEXP pSEXP, SEXP iSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const std::vector<size_t>& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< std::vector<size_t> >::type p(pSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type i(iSEXP);
     rcpp_result_gen = Rcpp::wrap(range_col_sym(p, i));
     return rcpp_result_gen;
 END_RCPP
 }
 // write_val_compact
-List write_val_compact(std::string filename, const std::vector<size_t>& p, const IntegerVector& i, const NumericVector& x, size_t offset_p, int offset_i, bool symmetric);
-RcppExport SEXP _bigsparser_write_val_compact(SEXP filenameSEXP, SEXP pSEXP, SEXP iSEXP, SEXP xSEXP, SEXP offset_pSEXP, SEXP offset_iSEXP, SEXP symmetricSEXP) {
+NumericVector write_val_compact(std::string filename, std::vector<size_t> p, const IntegerVector& i, const NumericVector& x, const IntegerVector& first_i, const IntegerVector& col_count, size_t offset_p, bool symmetric);
+RcppExport SEXP _bigsparser_write_val_compact(SEXP filenameSEXP, SEXP pSEXP, SEXP iSEXP, SEXP xSEXP, SEXP first_iSEXP, SEXP col_countSEXP, SEXP offset_pSEXP, SEXP symmetricSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type filename(filenameSEXP);
-    Rcpp::traits::input_parameter< const std::vector<size_t>& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< std::vector<size_t> >::type p(pSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type i(iSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type first_i(first_iSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type col_count(col_countSEXP);
     Rcpp::traits::input_parameter< size_t >::type offset_p(offset_pSEXP);
-    Rcpp::traits::input_parameter< int >::type offset_i(offset_iSEXP);
     Rcpp::traits::input_parameter< bool >::type symmetric(symmetricSEXP);
-    rcpp_result_gen = Rcpp::wrap(write_val_compact(filename, p, i, x, offset_p, offset_i, symmetric));
+    rcpp_result_gen = Rcpp::wrap(write_val_compact(filename, p, i, x, first_i, col_count, offset_p, symmetric));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -166,10 +168,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_bigsparser_sp_solve_sym_eigen", (DL_FUNC) &_bigsparser_sp_solve_sym_eigen, 5},
     {"_bigsparser_write_indval", (DL_FUNC) &_bigsparser_write_indval, 5},
     {"_bigsparser_col_count_sym", (DL_FUNC) &_bigsparser_col_count_sym, 2},
-    {"_bigsparser_write_indval_sym", (DL_FUNC) &_bigsparser_write_indval_sym, 6},
+    {"_bigsparser_write_indval_sym", (DL_FUNC) &_bigsparser_write_indval_sym, 7},
     {"_bigsparser_range_col", (DL_FUNC) &_bigsparser_range_col, 2},
     {"_bigsparser_range_col_sym", (DL_FUNC) &_bigsparser_range_col_sym, 2},
-    {"_bigsparser_write_val_compact", (DL_FUNC) &_bigsparser_write_val_compact, 7},
+    {"_bigsparser_write_val_compact", (DL_FUNC) &_bigsparser_write_val_compact, 8},
     {NULL, NULL, 0}
 };
 

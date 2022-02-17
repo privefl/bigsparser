@@ -38,12 +38,10 @@ assert_sparse_matrix <- function(spmat) {
 #'
 #' And some methods:
 #'   - `$save()`: Save the SFBM object in `$rds`. Returns the SFBM.
-#'   - `$add_columns()`: Add new columns from another sparse dgCMatrix.
+#'   - `$add_columns()`: Add new columns from a 'dgCMatrix' or a 'dsCMatrix'.
 #'
-#' @importFrom bigassertr assert_exist assert_noexist assert_dir
 #' @importFrom bigassertr assert_class assert_pos assert_one_int stop2
 #' @importFrom methods new
-#' @importFrom utils head tail
 #'
 #' @exportClass SFBM
 #'
@@ -73,7 +71,7 @@ SFBM_RC <- methods::setRefClass(
     },
 
     ncol = function() length(.self$p) - 1L,
-    nval = function() tail(.self$p, 1),
+    nval = function() utils::tail(.self$p, 1),
 
     sbk = function() .self$backingfile,
     rds = function() sub("\\.sbk$", ".rds", .self$sbk),
@@ -84,20 +82,21 @@ SFBM_RC <- methods::setRefClass(
     initialize = function(spmat, backingfile) {
 
       symmetric <- assert_sparse_matrix(spmat)
-
-      sbkfile <- path.expand(paste0(backingfile, ".sbk"))
-      assert_noexist(sbkfile)
-      assert_dir(dirname(sbkfile))
+      sbkfile <- paste0(backingfile, ".sbk")
 
       if (symmetric) {
-        new_p <- write_indval_sym(sbkfile, spmat@p, spmat@i, spmat@x, 0L)
+        col_count <- col_count_sym(spmat@p, spmat@i)
+        sbkfile <- rmio::file_create(sbkfile, 16 * sum(col_count))
+        .self$p <- write_indval_sym(sbkfile, spmat@p, spmat@i, spmat@x,
+                                    col_count, offset_p = 0L, offset_i = 0L)
       } else {
-        write_indval(sbkfile, spmat@i, spmat@x, 0L)
+        sbkfile <- rmio::file_create(sbkfile, 16 * length(spmat@x))
+        write_indval(sbkfile, spmat@i, spmat@x, offset_p = 0L, offset_i = 0L)
+        .self$p <- spmat@p
       }
 
       .self$backingfile <- normalizePath(sbkfile)
       .self$nrow        <- spmat@Dim[1]
-      .self$p           <- `if`(symmetric, new_p, spmat@p)
       .self$extptr      <- NIL_PTR
 
       .self
@@ -115,22 +114,25 @@ SFBM_RC <- methods::setRefClass(
       assert_one_int(offset_i)
       assert_pos(offset_i, strict = FALSE)
 
-      sbkfile <- .self$sbk
-      assert_exist(sbkfile)
+      offset_p <- .self$nval
 
-      offset_p <- tail(.self$p, 1)
+      ## reset pointers -> need this before resizing
+      .self$extptr <- NIL_PTR
+      gc()
 
       if (symmetric) {
+        col_count <- col_count_sym(spmat@p, spmat@i)
+        sbkfile <- rmio::file_resize_off(.self$sbk, 16 * sum(col_count))
         new_p <- write_indval_sym(sbkfile, spmat@p, spmat@i, spmat@x,
-                                  offset_p, offset_i)
+                                  col_count, offset_p, offset_i)
       } else {
+        sbkfile <- rmio::file_resize_off(.self$sbk, 16 * length(spmat@x))
         write_indval(sbkfile, spmat@i, spmat@x, offset_p, offset_i)
-        new_p <- spmat@p + 0 + offset_p
+        new_p <- spmat@p + as.double(offset_p)
       }
 
-      .self$nrow   <- max(.self$nrow, spmat@Dim[1] + offset_i)
-      .self$p      <- c(head(.self$p, -1), new_p)
-      .self$extptr <- NIL_PTR
+      .self$nrow <- max(.self$nrow, spmat@Dim[1] + offset_i)
+      .self$p    <- c(.self$p, new_p[-1])
 
       .self
     },
@@ -148,10 +150,10 @@ SFBM_RC <- methods::setRefClass(
 
 #' Convert to SFBM
 #'
-#' Convert a dgCMatrix or dsCMatrix to an SFBM.
+#' Convert a 'dgCMatrix' or 'dsCMatrix' to an SFBM.
 #'
-#' @param spmat A dgCMatrix (non-symmetric sparse matrix of type 'double')
-#'   or dsCMatrix (symmetric sparse matrix of type 'double').
+#' @param spmat A 'dgCMatrix' (non-symmetric sparse matrix of type 'double')
+#'   or 'dsCMatrix' (symmetric sparse matrix of type 'double').
 #' @param backingfile Path to file where to store data. Extension `.sbk` is
 #'   automatically added.
 #' @param compact Whether to use a compact format? Default is `FALSE`.
@@ -167,9 +169,9 @@ SFBM_RC <- methods::setRefClass(
 as_SFBM <- function(spmat, backingfile = tempfile(), compact = FALSE) {
 
   if (compact) {
-    new("SFBM_compact", spmat = spmat, backingfile = backingfile)
+    methods::new("SFBM_compact", spmat = spmat, backingfile = backingfile)
   } else {
-    new("SFBM",         spmat = spmat, backingfile = backingfile)
+    methods::new("SFBM",         spmat = spmat, backingfile = backingfile)
   }
 }
 
@@ -198,10 +200,7 @@ setMethod("length", signature(x = "SFBM"), function(x) prod(dim(x)))
 #' @details
 #' It inherits the fields and methods from class [SFBM][SFBM-class].
 #'
-#' @importFrom bigassertr assert_exist assert_noexist assert_dir
 #' @importFrom bigassertr assert_class assert_pos assert_one_int stop2
-#' @importFrom methods new
-#' @importFrom utils head tail
 #'
 #' @exportClass SFBM_compact
 #'
@@ -236,17 +235,18 @@ SFBM_compact_RC <- methods::setRefClass(
 
       symmetric <- assert_sparse_matrix(spmat)
 
-      sbkfile <- path.expand(paste0(backingfile, ".sbk"))
-      assert_noexist(sbkfile)
-      assert_dir(dirname(sbkfile))
+      col_range <- `if`(symmetric, range_col_sym, range_col)(spmat@p, spmat@i)
+      first_i_  <- col_range[[1]]
+      col_count <- col_range[[2]] - first_i_ + 1L
 
-      res <- write_val_compact(sbkfile, spmat@p, spmat@i, spmat@x, 0, 0L,
-                               symmetric = symmetric)
+      sbkfile <- rmio::file_create(paste0(backingfile, ".sbk"), 8 * sum(col_count))
+
+      .self$p <- write_val_compact(sbkfile, spmat@p, spmat@i, spmat@x,
+                                   first_i_, col_count, offset_p = 0L, symmetric)
 
       .self$backingfile <- normalizePath(sbkfile)
       .self$nrow        <- spmat@Dim[1]
-      .self$first_i     <- res[[1]]
-      .self$p           <- res[[2]]
+      .self$first_i     <- first_i_
       .self$extptr      <- NIL_PTR
 
       .self
@@ -259,23 +259,30 @@ SFBM_compact_RC <- methods::setRefClass(
       assert_one_int(offset_i)
       assert_pos(offset_i, strict = FALSE)
 
-      sbkfile <- .self$sbk
-      assert_exist(sbkfile)
+      offset_p <- .self$nval
 
-      offset_p <- tail(.self$p, 1)
+      col_range <- `if`(symmetric, range_col_sym, range_col)(spmat@p, spmat@i)
+      first_i_  <- col_range[[1]]
+      col_count <- col_range[[2]] - first_i_ + 1L
 
-      res <- write_val_compact(sbkfile, spmat@p, spmat@i, spmat@x,
-                               offset_p, offset_i, symmetric = symmetric)
+      ## reset pointers -> need this before resizing
+      .self$extptr <- NIL_PTR
+      gc()
+
+      sbkfile <- rmio::file_resize_off(.self$sbk, 8 * sum(col_count))
+
+      new_p <- write_val_compact(sbkfile, spmat@p, spmat@i, spmat@x,
+                                first_i_, col_count, offset_p, symmetric)
 
       .self$nrow    <- max(.self$nrow, spmat@Dim[1] + offset_i)
-      .self$first_i <- c(.self$first_i, res[[1]])
-      .self$p       <- c(head(.self$p, -1), res[[2]])
-      .self$extptr  <- NIL_PTR
+      .self$p       <- c(.self$p, new_p[-1])
+      .self$first_i <- c(.self$first_i,
+                         ifelse(first_i_ >= 0, first_i_ + as.integer(offset_i), first_i_))
 
       .self
     },
 
-    show = function() {  # TODO: add type when implementing 'float'
+    show = function() {
       cat(sprintf(
         "A compact Sparse Filebacked Big Matrix with %s rows and %s columns.\n",
         .self$nrow, .self$ncol))

@@ -2,10 +2,8 @@
 
 test_that("$add_columns() works with a dgCMatrix", {
 
-  library(Matrix)
-  spmat <- rsparsematrix(30, 30, density = 0.1, symmetric = TRUE)
+  spmat <- Matrix::rsparsematrix(30, 30, density = 0.1, symmetric = TRUE)
 
-  library(bigsparser)
   sfbm  <- as_SFBM(spmat[, 1:10])
   sfbm$add_columns(spmat[, 11:20], offset_i = 0)
   sfbm$add_columns(spmat[, 21:30], offset_i = 0)
@@ -15,17 +13,15 @@ test_that("$add_columns() works with a dgCMatrix", {
   b <- runif(ncol(sfbm))
   expect_equal(sp_prodVec(sfbm, b), as.vector(spmat %*% b))
   expect_equal(sp_solve_sym(sfbm, b, add_to_diag = 1e-4),
-               as.vector(solve(spmat + Diagonal(ncol(spmat), 1e-4), b)))
+               as.vector(solve(spmat + Matrix::Diagonal(ncol(spmat), 1e-4), b)))
 })
 
 ################################################################################
 
 test_that("$add_columns() works with a dsCMatrix", {
 
-  library(Matrix)
-  spmat <- rsparsematrix(30, 30, density = 0.1, symmetric = TRUE)
+  spmat <- Matrix::rsparsematrix(30, 30, density = 0.1, symmetric = TRUE)
 
-  library(bigsparser)
   sfbm  <- as_SFBM(spmat)
   sfbm$add_columns(spmat, offset_i = 0)
   expect_equal(dim(sfbm), c(30, 60))
@@ -50,7 +46,6 @@ test_that("$add_columns() (compact) works with a dgCMatrix", {
 
   spmat <- Matrix::rsparsematrix(30, 30, density = 0.1, symmetric = TRUE)
 
-  library(bigsparser)
   sfbm  <- as_SFBM(spmat[, 1:10], compact = TRUE)
   sfbm$add_columns(spmat[, 11:20], offset_i = 0)
   sfbm$add_columns(spmat[, 21:30], offset_i = 0)
@@ -63,16 +58,15 @@ test_that("$add_columns() (compact) works with a dgCMatrix", {
   b <- runif(ncol(sfbm))
   expect_equal(sp_prodVec(sfbm, b), as.vector(spmat %*% b))
   expect_equal(sp_solve_sym(sfbm, b, add_to_diag = 1e-4),
-               as.vector(solve(spmat + Diagonal(ncol(spmat), 1e-4), b)))
+               as.vector(solve(spmat + Matrix::Diagonal(ncol(spmat), 1e-4), b)))
 })
 
 ################################################################################
 
-test_that("$add_columns() works with a dsCMatrix", {
+test_that("$add_columns() (compact) works with a dsCMatrix", {
 
   spmat <- Matrix::rsparsematrix(30, 30, density = 0.1, symmetric = TRUE)
 
-  library(bigsparser)
   sfbm  <- as_SFBM(spmat, compact = TRUE)
   sfbm$add_columns(spmat, offset_i = 0)
   expect_equal(dim(sfbm), c(30, 60))
@@ -94,6 +88,30 @@ test_that("$add_columns() works with a dsCMatrix", {
 
   b <- runif(ncol(sfbm3))
   expect_equal(sp_prodVec(sfbm3, b), as.vector(spmat3 %*% b))
+})
+
+################################################################################
+
+test_that("$add_columns() works with large data", {
+
+  skip_on_cran()
+  skip_on_covr()
+
+  spmat <- Matrix::rsparsematrix(20e3, 20e3, nnz = 1e7, symmetric = TRUE)
+  sfbm  <- as_SFBM(spmat)
+
+  beg <- readBin(sfbm$sbk, what = 0, n = 1e6)
+
+  all_time <- replicate(15, {
+    # cat(".")
+    time <- system.time(sfbm$add_columns(spmat, nrow(sfbm)))[3]
+    # print(file.size(sfbm$backingfile))
+    time
+  })
+  # plot(all_time)
+  expect_equal(dim(sfbm), 16 * rep(20e3, 2))
+  expect_equal(sfbm$nval, 16 * length(as(spmat, "dgCMatrix")@x))
+  expect_identical(readBin(sfbm$sbk, what = 0, n = 1e6), beg)
 })
 
 ################################################################################

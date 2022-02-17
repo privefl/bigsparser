@@ -21,7 +21,7 @@ sp_solve_sym_eigen <- function(X, b, add_to_diag, tol, maxiter) {
     .Call(`_bigsparser_sp_solve_sym_eigen`, X, b, add_to_diag, tol, maxiter)
 }
 
-write_indval <- function(filename, i, x, offset_p, offset_i = 0L) {
+write_indval <- function(filename, i, x, offset_p, offset_i) {
     invisible(.Call(`_bigsparser_write_indval`, filename, i, x, offset_p, offset_i))
 }
 
@@ -29,8 +29,8 @@ col_count_sym <- function(p, i) {
     .Call(`_bigsparser_col_count_sym`, p, i)
 }
 
-write_indval_sym <- function(filename, p, i, x, offset_p, offset_i = 0L) {
-    .Call(`_bigsparser_write_indval_sym`, filename, p, i, x, offset_p, offset_i)
+write_indval_sym <- function(filename, p, i, x, col_count, offset_p, offset_i) {
+    .Call(`_bigsparser_write_indval_sym`, filename, p, i, x, col_count, offset_p, offset_i)
 }
 
 range_col <- function(p, i) {
@@ -41,7 +41,7 @@ range_col_sym <- function(p, i) {
     .Call(`_bigsparser_range_col_sym`, p, i)
 }
 
-write_val_compact <- function(filename, p, i, x, offset_p, offset_i, symmetric) {
-    .Call(`_bigsparser_write_val_compact`, filename, p, i, x, offset_p, offset_i, symmetric)
+write_val_compact <- function(filename, p, i, x, first_i, col_count, offset_p, symmetric) {
+    .Call(`_bigsparser_write_val_compact`, filename, p, i, x, first_i, col_count, offset_p, symmetric)
 }
 

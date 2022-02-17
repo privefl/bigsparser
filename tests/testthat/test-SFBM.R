@@ -13,7 +13,6 @@ test_that("can create an SFBM from a dgCMatrix", {
   i <- rep(0, length(spmat@x))
   x <- rep(0, length(spmat@x))
   for (k in seq_along(x)) {
-    # i[k] <- readBin(con, n = 1, what = integer(), size = 4)
     i[k] <- readBin(con, n = 1, what = double())
     x[k] <- readBin(con, n = 1, what = double())
   }

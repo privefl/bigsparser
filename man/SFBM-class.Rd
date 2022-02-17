@@ -10,8 +10,8 @@
 as_SFBM(spmat, backingfile = tempfile(), compact = FALSE)
 }
 \arguments{
-\item{spmat}{A dgCMatrix (non-symmetric sparse matrix of type 'double')
-or dsCMatrix (symmetric sparse matrix of type 'double').}
+\item{spmat}{A 'dgCMatrix' (non-symmetric sparse matrix of type 'double')
+or 'dsCMatrix' (symmetric sparse matrix of type 'double').}
 
 \item{backingfile}{Path to file where to store data. Extension \code{.sbk} is
 automatically added.}
@@ -26,7 +26,7 @@ The new \link[=SFBM-class]{SFBM}.
 A reference class for storing and accessing sparse matrix-like data stored
 in files on disk.
 
-Convert a dgCMatrix or dsCMatrix to an SFBM.
+Convert a 'dgCMatrix' or 'dsCMatrix' to an SFBM.
 }
 \details{
 An object of class SFBM has many fields:
@@ -47,7 +47,7 @@ data of the SFBM
 And some methods:
 \itemize{
 \item \verb{$save()}: Save the SFBM object in \verb{$rds}. Returns the SFBM.
-\item \verb{$add_columns()}: Add new columns from another sparse dgCMatrix.
+\item \verb{$add_columns()}: Add new columns from a 'dgCMatrix' or a 'dsCMatrix'.
 }
 }
 

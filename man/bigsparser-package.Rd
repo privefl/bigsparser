@@ -6,12 +6,7 @@
 \alias{bigsparser-package}
 \title{bigsparser: Sparse Matrix Format with Data on Disk}
 \description{
-Provides a sparse matrix format with data stored on disk, to be
-    used in both R and C++. This is intended for more efficient use of sparse 
-    data in C++ and also when parallelizing, since data on disk does not need
-    copying. Only a limited number of features will be implemented. For now,
-    conversion can be performed from a 'dgCMatrix' or a 'dsCMatrix' from R 
-    package 'Matrix'. A new compact format is also now available.
+Provides a sparse matrix format with data stored on disk, to be used in both R and C++. This is intended for more efficient use of sparse data in C++ and also when parallelizing, since data on disk does not need copying. Only a limited number of features will be implemented. For now, conversion can be performed from a 'dgCMatrix' or a 'dsCMatrix' from R package 'Matrix'. A new compact format is also now available.
 }
 \seealso{
 Useful links:
