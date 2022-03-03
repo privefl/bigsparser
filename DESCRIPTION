@@ -4,7 +4,7 @@ Version: 0.6.0
 Authors@R: 
     person(given = "Florian", family = "Privé", role = c("aut", "cre"),
            email = "florian.prive.21@gmail.com")
-Description: Provides a sparse matrix format with data stored on disk, to be
+Description: Provide a sparse matrix format with data stored on disk, to be
     used in both R and C++. This is intended for more efficient use of sparse 
     data in C++ and also when parallelizing, since data on disk does not need
     copying. Only a limited number of features will be implemented. For now,
