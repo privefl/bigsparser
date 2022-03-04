@@ -3,6 +3,8 @@
 
 /******************************************************************************/
 
+// This matrix-free solver in Eigen was pointed out by @yixuan (Yixuan Qiu)
+
 // https://eigen.tuxfamily.org/dox/group__MatrixfreeSolverExample.html
 
 // [[Rcpp::depends(RcppEigen)]]
