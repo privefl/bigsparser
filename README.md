@@ -15,5 +15,9 @@ A **new compact format** is available, which is useful when non-zero values in c
 ### Installation
 
 ```r
+# CRAN
+install.packages("bigsparser")
+
+# latest GitHub version
 remotes::install_github("privefl/bigsparser")
 ```
