@@ -1,6 +1,6 @@
 Package: bigsparser
 Title: Sparse Matrix Format with Data on Disk
-Version: 0.6.0
+Version: 0.6.1
 Authors@R: 
     person(given = "Florian", family = "Privé", role = c("aut", "cre"),
            email = "florian.prive.21@gmail.com")
@@ -25,7 +25,7 @@ Imports:
     Rcpp,
     bigassertr,
     methods,
+    Matrix,
     rmio (>= 0.4)
 Suggests:
-    Matrix,
     testthat (>= 2.1.0)

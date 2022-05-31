@@ -21,6 +21,14 @@ sp_solve_sym_eigen <- function(X, b, add_to_diag, tol, maxiter) {
     .Call(`_bigsparser_sp_solve_sym_eigen`, X, b, add_to_diag, tol, maxiter)
 }
 
+access_subset <- function(X, ind_row, ind_col) {
+    .Call(`_bigsparser_access_subset`, X, ind_row, ind_col)
+}
+
+access_subset_compact <- function(X, ind_row, ind_col) {
+    .Call(`_bigsparser_access_subset_compact`, X, ind_row, ind_col)
+}
+
 write_indval <- function(filename, i, x, offset_p, offset_i) {
     invisible(.Call(`_bigsparser_write_indval`, filename, i, x, offset_p, offset_i))
 }

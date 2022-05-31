@@ -4,26 +4,24 @@ test_that("can use SFBMs from old versions", {
 
   spmat <- Matrix::sparseMatrix(1, 2, x = 3, dims = c(3, 3))
   # X0 <- bigsparser::as_SFBM(spmat, "inst/testdata/old_sfbm")
-  # saveRDS(X0, "inst/testdata/old_sfbm.rds", version = 2)
-  test_file <- system.file("testdata/old_sfbm.rds", package = "bigsparser")
-  if (file.exists(test_file)) {
-    X <- readRDS(test_file)
-    X$backingfile <- sub("\\.rds$", ".sbk", test_file)
-    expect_false(identical(X$address, methods::new("externalptr")))
-    expect_identical(sp_prodVec(X, rep(1, 3)), c(3, 0, 0))
-  }
+  # saveRDS(X0, "tests/testthat/testdata/old_sfbm.rds", version = 2)
+  test_file <- test_path("testdata/old_sfbm.rds")
+  X <- readRDS(test_file)
+  X$backingfile <- sub("\\.rds$", ".sbk", test_file)
+  expect_false(identical(X$address, methods::new("externalptr")))
+  expect_identical(sp_prodVec(X, rep(1, 3)), c(3, 0, 0))
 })
 
 ################################################################################
 
 test_that("internal function work properly", {
 
-  corr2 <- Matrix::Diagonal(4, 0:3)
-  corr2[4, 2] <- 5
-  corr2[1, 4] <- 6
-  corr2[3, 4] <- 7
+  spmat <- Matrix::Diagonal(4, 0:3)
+  spmat[4, 2] <- 5
+  spmat[1, 4] <- 6
+  spmat[3, 4] <- 7
 
-  col_range <- bigsparser:::range_col(corr2@p, corr2@i)
+  col_range <- bigsparser:::range_col(spmat@p, spmat@i)
   expect_equal(col_range, list(c(-1, 1, 2, 0), c(-2, 3, 2, 3)))
 
   first_i_  <- col_range[[1]]
@@ -32,7 +30,7 @@ test_that("internal function work properly", {
   tmp <- rmio::file_create(tempfile(), 8 * sum(col_count))
 
   new_p <- bigsparser:::write_val_compact(
-    tmp, corr2@p, corr2@i, corr2@x,
+    tmp, spmat@p, spmat@i, spmat@x,
     first_i_, col_count, offset_p = 0, symmetric = FALSE)
   expect_equal(new_p, c(0, 0, 3, 4, 8))
 
@@ -40,9 +38,9 @@ test_that("internal function work properly", {
                    c(1, 0, 5, 2, 6, 0, 7, 3))
 
 
-  (corr3 <- Matrix::forceSymmetric(corr2))
+  (spmat2 <- Matrix::forceSymmetric(spmat))
 
-  col_range2 <- bigsparser:::range_col_sym(corr3@p, corr3@i)
+  col_range2 <- bigsparser:::range_col_sym(spmat2@p, spmat2@i)
   expect_equal(col_range2, list(c(3, 1, 2, 0), c(3, 1, 3, 3)))
 
   first_i_2  <- col_range2[[1]]
@@ -52,7 +50,7 @@ test_that("internal function work properly", {
   tmp2 <- rmio::file_create(tempfile(), 8 * sum(col_count2))
 
   new_p2 <- bigsparser:::write_val_compact(
-    tmp2, corr3@p, corr3@i, corr3@x,
+    tmp2, spmat2@p, spmat2@i, spmat2@x,
     first_i_2, col_count2, offset_p = 0, symmetric = TRUE)
   expect_equal(new_p2, c(0, 1, 2, 4, 8))
 

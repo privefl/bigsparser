@@ -74,6 +74,32 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// access_subset
+List access_subset(Rcpp::Environment X, const IntegerVector& ind_row, const IntegerVector& ind_col);
+RcppExport SEXP _bigsparser_access_subset(SEXP XSEXP, SEXP ind_rowSEXP, SEXP ind_colSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::Environment >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type ind_row(ind_rowSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type ind_col(ind_colSEXP);
+    rcpp_result_gen = Rcpp::wrap(access_subset(X, ind_row, ind_col));
+    return rcpp_result_gen;
+END_RCPP
+}
+// access_subset_compact
+List access_subset_compact(Rcpp::Environment X, const IntegerVector& ind_row, const IntegerVector& ind_col);
+RcppExport SEXP _bigsparser_access_subset_compact(SEXP XSEXP, SEXP ind_rowSEXP, SEXP ind_colSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::Environment >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type ind_row(ind_rowSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type ind_col(ind_colSEXP);
+    rcpp_result_gen = Rcpp::wrap(access_subset_compact(X, ind_row, ind_col));
+    return rcpp_result_gen;
+END_RCPP
+}
 // write_indval
 void write_indval(std::string filename, const IntegerVector& i, const NumericVector& x, size_t offset_p, int offset_i);
 RcppExport SEXP _bigsparser_write_indval(SEXP filenameSEXP, SEXP iSEXP, SEXP xSEXP, SEXP offset_pSEXP, SEXP offset_iSEXP) {
@@ -166,6 +192,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_bigsparser_prodVec", (DL_FUNC) &_bigsparser_prodVec, 2},
     {"_bigsparser_cprodVec", (DL_FUNC) &_bigsparser_cprodVec, 2},
     {"_bigsparser_sp_solve_sym_eigen", (DL_FUNC) &_bigsparser_sp_solve_sym_eigen, 5},
+    {"_bigsparser_access_subset", (DL_FUNC) &_bigsparser_access_subset, 3},
+    {"_bigsparser_access_subset_compact", (DL_FUNC) &_bigsparser_access_subset_compact, 3},
     {"_bigsparser_write_indval", (DL_FUNC) &_bigsparser_write_indval, 5},
     {"_bigsparser_col_count_sym", (DL_FUNC) &_bigsparser_col_count_sym, 2},
     {"_bigsparser_write_indval_sym", (DL_FUNC) &_bigsparser_write_indval_sym, 7},

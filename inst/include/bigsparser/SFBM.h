@@ -28,6 +28,7 @@ public:
     this->compact = first_i.size() > 0;
   }
 
+  const double* i_x() { return reinterpret_cast<const double*>(ro_mmap.data()); }
   size_t nrow() const { return n; }
   size_t ncol() const { return m; }
   bool is_compact() const { return compact; }
