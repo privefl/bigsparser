@@ -1,5 +1,8 @@
 ## bigsparser: sparse matrix format with data on disk
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/privefl/bigsparser/workflows/R-CMD-check/badge.svg)](https://github.com/privefl/bigsparser/actions)
+<!-- badges: end -->
 
 ### Features
 
