@@ -200,8 +200,6 @@ setMethod("length", signature(x = "SFBM"), function(x) prod(dim(x)))
 #' @details
 #' It inherits the fields and methods from class [SFBM][SFBM-class].
 #'
-#' @importFrom bigassertr assert_class assert_pos assert_one_int stop2
-#'
 #' @exportClass SFBM_compact
 #'
 SFBM_compact_RC <- methods::setRefClass(
@@ -290,5 +288,134 @@ SFBM_compact_RC <- methods::setRefClass(
     }
   )
 )
+
+################################################################################
+
+#' Class SFBM_corr_compact
+#'
+#' A reference class for storing and accessing from disk a sparse correlation
+#' matrix where non-zero values in columns are mostly contiguous. It rounds
+#' correlation values with precision 1/32767 to store them using 2 bytes only.
+#' This class has been specifically designed for package 'bigsnpr'.
+#'
+#' @details
+#' It inherits the fields and methods from class [SFBM_compact][SFBM-class].
+#'
+#' @exportClass SFBM_corr_compact
+#'
+SFBM_corr_compact_RC <- methods::setRefClass(
+
+  "SFBM_corr_compact",
+
+  contains = "SFBM_compact",
+
+  fields = list(
+
+    #### Active bindings
+    address = function() {
+
+      if (identical(.self$extptr, NIL_PTR)) {
+        .self$extptr <- getXPtrSFBM_corr_compact(
+          path    = .self$backingfile,
+          n       = .self$nrow,
+          m       = .self$ncol,
+          p       = .self$p,
+          first_i = .self$first_i
+        )
+      }
+
+      .self$extptr
+    }
+  ),
+
+  methods = list(
+    initialize = function(spmat, backingfile) {
+
+      symmetric <- assert_sparse_matrix(spmat)
+
+      col_range <- `if`(symmetric, range_col_sym, range_col)(spmat@p, spmat@i)
+      first_i_  <- col_range[[1]]
+      col_count <- col_range[[2]] - first_i_ + 1L
+
+      sbkfile <- rmio::file_create(paste0(backingfile, ".sbk"), 2 * sum(col_count))
+
+      .self$p <- write_val_corr_compact(
+        sbkfile, spmat@p, spmat@i, spmat@x,
+        first_i_, col_count, offset_p = 0L, symmetric)
+
+      .self$backingfile <- normalizePath(sbkfile)
+      .self$nrow        <- spmat@Dim[1]
+      .self$first_i     <- first_i_
+      .self$extptr      <- NIL_PTR
+
+      .self
+    },
+
+    add_columns = function(spmat, offset_i) {
+
+      symmetric <- assert_sparse_matrix(spmat)
+
+      assert_one_int(offset_i)
+      assert_pos(offset_i, strict = FALSE)
+
+      offset_p <- .self$nval
+
+      col_range <- `if`(symmetric, range_col_sym, range_col)(spmat@p, spmat@i)
+      first_i_  <- col_range[[1]]
+      col_count <- col_range[[2]] - first_i_ + 1L
+
+      ## reset pointers -> need this before resizing
+      .self$extptr <- NIL_PTR
+      gc()
+
+      sbkfile <- rmio::file_resize_off(.self$sbk, 2 * sum(col_count))
+
+      new_p <- write_val_corr_compact(
+        sbkfile, spmat@p, spmat@i, spmat@x,
+        first_i_, col_count, offset_p, symmetric)
+
+      .self$nrow    <- max(.self$nrow, spmat@Dim[1] + offset_i)
+      .self$p       <- c(.self$p, new_p[-1])
+      .self$first_i <- c(.self$first_i,
+                         ifelse(first_i_ >= 0, first_i_ + as.integer(offset_i), first_i_))
+
+      .self
+    },
+
+    show = function() {
+      cat(sprintf(
+        "A compact SFBM correlation with %s rows and %s columns.\n",
+        .self$nrow, .self$ncol))
+      invisible(.self)
+    }
+  )
+)
+
+################################################################################
+
+#' Convert to SFBM_corr_compact
+#'
+#' Convert a 'dgCMatrix' or 'dsCMatrix' to an SFBM_corr_compact.
+#'
+#' @param spmat A 'dgCMatrix' (non-symmetric sparse matrix of type 'double')
+#'   or 'dsCMatrix' (symmetric sparse matrix of type 'double').
+#' @param backingfile Path to file where to store data. Extension `.sbk` is
+#'   automatically added.
+#'
+#' @return The new [SFBM_corr_compact][SFBM_corr_compact-class].
+#'
+#' @rdname SFBM_corr_compact-class
+#' @export
+#'
+#' @examples
+#' spmat2 <- as(cor(iris[1:4]), "dsCMatrix")
+#' (X2 <- as_SFBM_corr_compact(spmat2))
+#' (bin <- readBin(X2$sbk, what = integer(), size = 2, n = 100))
+#' matrix(bin / 32767, 4)
+#' spmat2
+#'
+as_SFBM_corr_compact <- function(spmat, backingfile = tempfile()) {
+  methods::new("SFBM_corr_compact", spmat = spmat, backingfile = backingfile)
+}
 
 ################################################################################

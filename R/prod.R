@@ -29,7 +29,11 @@ sp_prodVec <- function(X, y) {
   assert_class(X, "SFBM")
   assert_lengths(seq_len(ncol(X)), y)
 
-  prodVec(X, y)
+  if (inherits(X, "SFBM_corr_compact")) {
+    corr_prodVec(X, y)
+  } else {
+    prodVec(X, y)
+  }
 }
 
 ################################################################################
@@ -41,7 +45,11 @@ sp_cprodVec <- function(X, y) {
   assert_class(X, "SFBM")
   assert_lengths(seq_len(nrow(X)), y)
 
-  cprodVec(X, y)
+  if (inherits(X, "SFBM_corr_compact")) {
+    corr_cprodVec(X, y)
+  } else {
+    cprodVec(X, y)
+  }
 }
 
 ################################################################################

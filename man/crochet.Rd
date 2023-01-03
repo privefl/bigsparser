@@ -3,11 +3,14 @@
 \name{[,SFBM,ANY,ANY,ANY-method}
 \alias{[,SFBM,ANY,ANY,ANY-method}
 \alias{[,SFBM_compact,ANY,ANY,ANY-method}
+\alias{[,SFBM_corr_compact,ANY,ANY,ANY-method}
 \title{Accessor methods for class \code{SFBM}.}
 \usage{
 \S4method{[}{SFBM,ANY,ANY,ANY}(x, i, j, ..., drop = FALSE)
 
 \S4method{[}{SFBM_compact,ANY,ANY,ANY}(x, i, j, ..., drop = FALSE)
+
+\S4method{[}{SFBM_corr_compact,ANY,ANY,ANY}(x, i, j, ..., drop = FALSE)
 }
 \arguments{
 \item{x}{A \link[=SFBM-class]{SFBM} object.}

@@ -21,7 +21,8 @@ public:
 
     std::error_code error;
     this->ro_mmap.map(path, error);
-    if (error) Rcpp::stop("Error when mapping file:\n  %s.\n", error.message());
+    if (error)
+      Rcpp::stop("Error when mapping file:\n  %s.\n", error.message());
 
     this->data = reinterpret_cast<const double*>(ro_mmap.data());
 

@@ -18,7 +18,7 @@ transform_ind <- function(k, lim) {
 }
 
 
-spmat_accessor <- function(compact) {
+spmat_accessor <- function(compact, corr = FALSE) {
 
   function(x, i, j, ..., drop = FALSE) {
 
@@ -40,7 +40,9 @@ spmat_accessor <- function(compact) {
       ind_row <- transform_ind(i, nrow(x))
       ind_col <- transform_ind(j, ncol(x))
 
-      res <- if (compact) {
+      res <- if (corr) {
+        access_subset_corr_compact(x, ind_row, ind_col)
+      } else if (compact) {
         access_subset_compact(x, ind_row, ind_col)
       } else {
         access_subset(x, ind_row, ind_col)
@@ -98,5 +100,12 @@ setMethod('[', signature(x = "SFBM"), spmat_accessor(compact = FALSE))
 #' @export
 #'
 setMethod('[', signature(x = "SFBM_compact"), spmat_accessor(compact = TRUE))
+
+
+#' @rdname crochet
+#'
+#' @export
+#'
+setMethod('[', signature(x = "SFBM_corr_compact"), spmat_accessor(corr = TRUE))
 
 ################################################################################

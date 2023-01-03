@@ -32,6 +32,9 @@ sp_solve_sym <- function(A, b,
                          tol = 1e-10,
                          maxiter = 10 * ncol(A)) {
 
+  if (inherits(A, "SFBM_corr_compact"))
+    stop2("sp_solve_sym() is not implemented for a 'SFBM_corr_compact'.")
+
   assert_class(A, "SFBM")
 
   if (length(add_to_diag) == 1)

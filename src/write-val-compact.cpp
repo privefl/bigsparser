@@ -117,3 +117,62 @@ NumericVector write_val_compact(std::string filename,
 }
 
 /******************************************************************************/
+
+// [[Rcpp::export]]
+NumericVector write_val_corr_compact(std::string filename,
+                                     std::vector<size_t> p,
+                                     const IntegerVector& i,
+                                     const NumericVector& x,
+                                     const IntegerVector& first_i,
+                                     const IntegerVector& col_count,
+                                     size_t offset_p,
+                                     bool symmetric) {
+
+  if (is_true(any(col_count < 0)))
+    Rcpp::stop("This is a bug.");
+
+  int m = col_count.size();
+
+  std::vector<size_t> data_offset(m);
+  size_t K = 0;
+  for (int j = 0; j < m; j++) {
+    data_offset[j] = K;
+    K += col_count[j];
+  }
+
+  mio::mmap_sink rw_mmap;
+  std::error_code error;
+  rw_mmap.map(filename, 2 * offset_p, 2 * K, error);
+  if (error)
+    Rcpp::stop("Error when mapping file:\n  %s.\n", error.message());
+
+  int16_t * data = reinterpret_cast<int16_t*>(rw_mmap.data());
+
+  // make sure holes are filled up with 0s
+  for (size_t k = 0; k < K; k++) data[k] = 0;
+
+  for (int j = 0; j < m; j++) {
+
+    size_t lo = p[j];
+    size_t up = p[j + 1];
+
+    for (size_t k = lo; k < up; k++) {
+      // write x for (i, j)
+      size_t where1 = data_offset[j] + (i[k] - first_i[j]);
+      data[where1] = round(x[k] * 32767);
+      if (symmetric) {
+        // write x for (j, i)
+        size_t where2 = data_offset[i[k]] + (j - first_i[i[k]]);
+        data[where2] = round(x[k] * 32767);
+      }
+    }
+  }
+
+  NumericVector new_p(m + 1);
+  new_p[0] = offset_p;
+  for (int j = 0; j < m; j++) new_p[j + 1] = new_p[j] + col_count[j];
+
+  return new_p;
+}
+
+/******************************************************************************/

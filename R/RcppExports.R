@@ -9,12 +9,24 @@ getXPtrSFBM_compact <- function(path, n, m, p, first_i) {
     .Call(`_bigsparser_getXPtrSFBM_compact`, path, n, m, p, first_i)
 }
 
+getXPtrSFBM_corr_compact <- function(path, n, m, p, first_i) {
+    .Call(`_bigsparser_getXPtrSFBM_corr_compact`, path, n, m, p, first_i)
+}
+
 prodVec <- function(X, y) {
     .Call(`_bigsparser_prodVec`, X, y)
 }
 
 cprodVec <- function(X, y) {
     .Call(`_bigsparser_cprodVec`, X, y)
+}
+
+corr_prodVec <- function(X, y) {
+    .Call(`_bigsparser_corr_prodVec`, X, y)
+}
+
+corr_cprodVec <- function(X, y) {
+    .Call(`_bigsparser_corr_cprodVec`, X, y)
 }
 
 sp_solve_sym_eigen <- function(X, b, add_to_diag, tol, maxiter) {
@@ -27,6 +39,10 @@ access_subset <- function(X, ind_row, ind_col) {
 
 access_subset_compact <- function(X, ind_row, ind_col) {
     .Call(`_bigsparser_access_subset_compact`, X, ind_row, ind_col)
+}
+
+access_subset_corr_compact <- function(X, ind_row, ind_col) {
+    .Call(`_bigsparser_access_subset_corr_compact`, X, ind_row, ind_col)
 }
 
 write_indval <- function(filename, i, x, offset_p, offset_i) {
@@ -51,5 +67,9 @@ range_col_sym <- function(p, i) {
 
 write_val_compact <- function(filename, p, i, x, first_i, col_count, offset_p, symmetric) {
     .Call(`_bigsparser_write_val_compact`, filename, p, i, x, first_i, col_count, offset_p, symmetric)
+}
+
+write_val_corr_compact <- function(filename, p, i, x, first_i, col_count, offset_p, symmetric) {
+    .Call(`_bigsparser_write_val_corr_compact`, filename, p, i, x, first_i, col_count, offset_p, symmetric)
 }
 
