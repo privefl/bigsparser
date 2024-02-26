@@ -1,6 +1,6 @@
 Package: bigsparser
 Title: Sparse Matrix Format with Data on Disk
-Version: 0.7.0
+Version: 0.7.1
 Authors@R: 
     person(given = "Florian", family = "Privé", role = c("aut", "cre"),
            email = "florian.prive.21@gmail.com")
@@ -13,7 +13,7 @@ Description: Provide a sparse matrix format with data stored on disk, to be
 License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
 URL: https://github.com/privefl/bigsparser
 BugReports: https://github.com/privefl/bigsparser/issues
 Depends: R (>= 3.1)

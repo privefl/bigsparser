@@ -13,6 +13,18 @@ getXPtrSFBM_corr_compact <- function(path, n, m, p, first_i) {
     .Call(`_bigsparser_getXPtrSFBM_corr_compact`, path, n, m, p, first_i)
 }
 
+access_dense_subset <- function(X, ind_row, ind_col) {
+    .Call(`_bigsparser_access_dense_subset`, X, ind_row, ind_col)
+}
+
+access_dense_subset_compact <- function(X, ind_row, ind_col) {
+    .Call(`_bigsparser_access_dense_subset_compact`, X, ind_row, ind_col)
+}
+
+access_dense_subset_corr_compact <- function(X, ind_row, ind_col) {
+    .Call(`_bigsparser_access_dense_subset_corr_compact`, X, ind_row, ind_col)
+}
+
 prodVec <- function(X, y) {
     .Call(`_bigsparser_prodVec`, X, y)
 }

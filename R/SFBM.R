@@ -39,6 +39,8 @@ assert_sparse_matrix <- function(spmat) {
 #' And some methods:
 #'   - `$save()`: Save the SFBM object in `$rds`. Returns the SFBM.
 #'   - `$add_columns()`: Add new columns from a 'dgCMatrix' or a 'dsCMatrix'.
+#'   - `$dense_acc()`: Equivalent to `as.matrix(.[ind_row, ind_col])`. Use with
+#'     caution; `ind_row` and `ind_col` must be positive indices within range.
 #'
 #' @importFrom bigassertr assert_class assert_pos assert_one_int stop2
 #' @importFrom methods new
@@ -135,6 +137,10 @@ SFBM_RC <- methods::setRefClass(
       .self$p    <- c(.self$p, new_p[-1])
 
       .self
+    },
+
+    dense_acc = function(ind_row, ind_col) {
+      access_dense_subset(.self, ind_row, ind_col)
     },
 
     show = function() {
@@ -280,6 +286,10 @@ SFBM_compact_RC <- methods::setRefClass(
       .self
     },
 
+    dense_acc = function(ind_row, ind_col) {
+      access_dense_subset_compact(.self, ind_row, ind_col)
+    },
+
     show = function() {
       cat(sprintf(
         "A compact Sparse Filebacked Big Matrix with %s rows and %s columns.\n",
@@ -380,6 +390,10 @@ SFBM_corr_compact_RC <- methods::setRefClass(
                          ifelse(first_i_ >= 0, first_i_ + as.integer(offset_i), first_i_))
 
       .self
+    },
+
+    dense_acc = function(ind_row, ind_col) {
+      access_dense_subset_corr_compact(.self, ind_row, ind_col)
     },
 
     show = function() {

@@ -48,6 +48,8 @@ And some methods:
 \itemize{
 \item \verb{$save()}: Save the SFBM object in \verb{$rds}. Returns the SFBM.
 \item \verb{$add_columns()}: Add new columns from a 'dgCMatrix' or a 'dsCMatrix'.
+\item \verb{$dense_acc()}: Equivalent to \code{as.matrix(.[ind_row, ind_col])}. Use with
+caution; \code{ind_row} and \code{ind_col} must be positive indices within range.
 }
 }
 

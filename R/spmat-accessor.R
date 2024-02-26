@@ -88,9 +88,11 @@ spmat_accessor <- function(compact, corr = FALSE) {
 #' X[1:3, 2:3]
 #' X[, 4]   # parameter drop is not implemented
 #' X[-1, 3:4]
+#' X$dense_acc(2:4, 3:4)
 #'
 #' X2 <- as_SFBM(spmat, compact = TRUE)
 #' X2[1:3, 2:3]
+#' X2$dense_acc(1:3, 2:3)
 #'
 setMethod('[', signature(x = "SFBM"), spmat_accessor(compact = FALSE))
 
