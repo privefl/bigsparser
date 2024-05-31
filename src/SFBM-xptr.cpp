@@ -3,9 +3,6 @@
 #include <bigsparser/SFBM.h>
 #include <bigsparser/SFBM-corr-compact.h>
 
-// Enable C++11 via this plugin (Rcpp 0.10.3 or later)
-// [[Rcpp::plugins(cpp11)]]
-
 /******************************************************************************/
 
 SEXP getXPtrSFBM0(std::string path, int n, int m, const std::vector<size_t>& p,
