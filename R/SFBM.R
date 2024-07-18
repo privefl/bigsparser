@@ -44,6 +44,7 @@ assert_sparse_matrix <- function(spmat) {
 #'
 #' @importFrom bigassertr assert_class assert_pos assert_one_int stop2
 #' @importFrom methods new
+#' @importFrom rmio file_create file_resize_off
 #'
 #' @exportClass SFBM
 #'
@@ -88,11 +89,11 @@ SFBM_RC <- methods::setRefClass(
 
       if (symmetric) {
         col_count <- col_count_sym(spmat@p, spmat@i)
-        sbkfile <- rmio::file_create(sbkfile, 16 * sum(col_count))
+        sbkfile <- file_create(sbkfile, 16 * sum(col_count))
         .self$p <- write_indval_sym(sbkfile, spmat@p, spmat@i, spmat@x,
                                     col_count, offset_p = 0L, offset_i = 0L)
       } else {
-        sbkfile <- rmio::file_create(sbkfile, 16 * length(spmat@x))
+        sbkfile <- file_create(sbkfile, 16 * length(spmat@x))
         write_indval(sbkfile, spmat@i, spmat@x, offset_p = 0L, offset_i = 0L)
         .self$p <- spmat@p
       }
@@ -124,11 +125,11 @@ SFBM_RC <- methods::setRefClass(
 
       if (symmetric) {
         col_count <- col_count_sym(spmat@p, spmat@i)
-        sbkfile <- rmio::file_resize_off(.self$sbk, 16 * sum(col_count))
+        sbkfile <- file_resize_off(.self$sbk, 16 * sum(col_count))
         new_p <- write_indval_sym(sbkfile, spmat@p, spmat@i, spmat@x,
                                   col_count, offset_p, offset_i)
       } else {
-        sbkfile <- rmio::file_resize_off(.self$sbk, 16 * length(spmat@x))
+        sbkfile <- file_resize_off(.self$sbk, 16 * length(spmat@x))
         write_indval(sbkfile, spmat@i, spmat@x, offset_p, offset_i)
         new_p <- spmat@p + as.double(offset_p)
       }
@@ -243,7 +244,7 @@ SFBM_compact_RC <- methods::setRefClass(
       first_i_  <- col_range[[1]]
       col_count <- col_range[[2]] - first_i_ + 1L
 
-      sbkfile <- rmio::file_create(paste0(backingfile, ".sbk"), 8 * sum(col_count))
+      sbkfile <- file_create(paste0(backingfile, ".sbk"), 8 * sum(col_count))
 
       .self$p <- write_val_compact(sbkfile, spmat@p, spmat@i, spmat@x,
                                    first_i_, col_count, offset_p = 0L, symmetric)
@@ -273,7 +274,7 @@ SFBM_compact_RC <- methods::setRefClass(
       .self$extptr <- NIL_PTR
       gc()
 
-      sbkfile <- rmio::file_resize_off(.self$sbk, 8 * sum(col_count))
+      sbkfile <- file_resize_off(.self$sbk, 8 * sum(col_count))
 
       new_p <- write_val_compact(sbkfile, spmat@p, spmat@i, spmat@x,
                                 first_i_, col_count, offset_p, symmetric)
@@ -347,7 +348,7 @@ SFBM_corr_compact_RC <- methods::setRefClass(
       first_i_  <- col_range[[1]]
       col_count <- col_range[[2]] - first_i_ + 1L
 
-      sbkfile <- rmio::file_create(paste0(backingfile, ".sbk"), 2 * sum(col_count))
+      sbkfile <- file_create(paste0(backingfile, ".sbk"), 2 * sum(col_count))
 
       .self$p <- write_val_corr_compact(
         sbkfile, spmat@p, spmat@i, spmat@x,
@@ -378,7 +379,7 @@ SFBM_corr_compact_RC <- methods::setRefClass(
       .self$extptr <- NIL_PTR
       gc()
 
-      sbkfile <- rmio::file_resize_off(.self$sbk, 2 * sum(col_count))
+      sbkfile <- file_resize_off(.self$sbk, 2 * sum(col_count))
 
       new_p <- write_val_corr_compact(
         sbkfile, spmat@p, spmat@i, spmat@x,
