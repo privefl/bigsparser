@@ -433,3 +433,17 @@ as_SFBM_corr_compact <- function(spmat, backingfile = tempfile()) {
 }
 
 ################################################################################
+
+#' @rdname SFBM-methods
+#' @export
+setMethod("diag", signature(x = "SFBM"), function(x) diag_sfbm(x))
+
+#' @rdname SFBM-methods
+#' @export
+setMethod("diag", signature(x = "SFBM_compact"), function(x) diag_sfbm_compact(x))
+
+#' @rdname SFBM-methods
+#' @export
+setMethod("diag", signature(x = "SFBM_corr_compact"), function(x) diag_sfbm_corr_compact(x))
+
+################################################################################

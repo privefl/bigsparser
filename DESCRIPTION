@@ -1,6 +1,6 @@
 Package: bigsparser
 Title: Sparse Matrix Format with Data on Disk
-Version: 0.7.1
+Version: 0.7.2
 Authors@R: 
     person(given = "Florian", family = "Privé", role = c("aut", "cre"),
            email = "florian.prive.21@gmail.com")

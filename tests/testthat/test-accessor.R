@@ -79,3 +79,26 @@ test_that("dense matrix accessors work", {
 })
 
 ################################################################################
+
+test_that("diag() works", {
+
+  replicate(20, {
+
+    nrow <- sample(3:10, 1)
+    ncol <- sample(3:10, 1)
+    spmat <- Matrix::rsparsematrix(nrow, ncol, density = 0.4)
+    for (compact in c(TRUE, FALSE)) {
+      X <- as_SFBM(spmat, compact = compact)
+      expect_identical(diag(X), diag(spmat))
+    }
+
+    spmat2 <- Matrix::rsparsematrix(10, 10, density = 0.5, symmetric = TRUE)
+    diag(spmat2) <- 10
+    spmat3 <- Matrix::cov2cor(spmat2)
+    diag(spmat3) <- diag(spmat3) - runif(10)
+    X2 <- as_SFBM_corr_compact(spmat3)
+    expect_equal(diag(X2), diag(spmat3), tolerance = 2 / 32767)
+  })
+})
+
+################################################################################

@@ -94,6 +94,39 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// diag_sfbm
+NumericVector diag_sfbm(Environment X);
+RcppExport SEXP _bigsparser_diag_sfbm(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Environment >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(diag_sfbm(X));
+    return rcpp_result_gen;
+END_RCPP
+}
+// diag_sfbm_compact
+NumericVector diag_sfbm_compact(Environment X);
+RcppExport SEXP _bigsparser_diag_sfbm_compact(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Environment >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(diag_sfbm_compact(X));
+    return rcpp_result_gen;
+END_RCPP
+}
+// diag_sfbm_corr_compact
+NumericVector diag_sfbm_corr_compact(Environment X);
+RcppExport SEXP _bigsparser_diag_sfbm_corr_compact(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Environment >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(diag_sfbm_corr_compact(X));
+    return rcpp_result_gen;
+END_RCPP
+}
 // prodVec
 NumericVector prodVec(Environment X, const NumericVector& y);
 RcppExport SEXP _bigsparser_prodVec(SEXP XSEXP, SEXP ySEXP) {
@@ -307,6 +340,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_bigsparser_access_dense_subset", (DL_FUNC) &_bigsparser_access_dense_subset, 3},
     {"_bigsparser_access_dense_subset_compact", (DL_FUNC) &_bigsparser_access_dense_subset_compact, 3},
     {"_bigsparser_access_dense_subset_corr_compact", (DL_FUNC) &_bigsparser_access_dense_subset_corr_compact, 3},
+    {"_bigsparser_diag_sfbm", (DL_FUNC) &_bigsparser_diag_sfbm, 1},
+    {"_bigsparser_diag_sfbm_compact", (DL_FUNC) &_bigsparser_diag_sfbm_compact, 1},
+    {"_bigsparser_diag_sfbm_corr_compact", (DL_FUNC) &_bigsparser_diag_sfbm_corr_compact, 1},
     {"_bigsparser_prodVec", (DL_FUNC) &_bigsparser_prodVec, 2},
     {"_bigsparser_cprodVec", (DL_FUNC) &_bigsparser_cprodVec, 2},
     {"_bigsparser_corr_prodVec", (DL_FUNC) &_bigsparser_corr_prodVec, 2},

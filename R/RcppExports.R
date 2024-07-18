@@ -25,6 +25,18 @@ access_dense_subset_corr_compact <- function(X, ind_row, ind_col) {
     .Call(`_bigsparser_access_dense_subset_corr_compact`, X, ind_row, ind_col)
 }
 
+diag_sfbm <- function(X) {
+    .Call(`_bigsparser_diag_sfbm`, X)
+}
+
+diag_sfbm_compact <- function(X) {
+    .Call(`_bigsparser_diag_sfbm_compact`, X)
+}
+
+diag_sfbm_corr_compact <- function(X) {
+    .Call(`_bigsparser_diag_sfbm_corr_compact`, X)
+}
+
 prodVec <- function(X, y) {
     .Call(`_bigsparser_prodVec`, X, y)
 }

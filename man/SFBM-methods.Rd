@@ -3,11 +3,20 @@
 \name{dim,SFBM-method}
 \alias{dim,SFBM-method}
 \alias{length,SFBM-method}
+\alias{diag,SFBM-method}
+\alias{diag,SFBM_compact-method}
+\alias{diag,SFBM_corr_compact-method}
 \title{Dimension and type methods for class \code{SFBM}.}
 \usage{
 \S4method{dim}{SFBM}(x)
 
 \S4method{length}{SFBM}(x)
+
+\S4method{diag}{SFBM}(x)
+
+\S4method{diag}{SFBM_compact}(x)
+
+\S4method{diag}{SFBM_corr_compact}(x)
 }
 \arguments{
 \item{x}{An object of class \link[=SFBM-class]{SFBM}.}
