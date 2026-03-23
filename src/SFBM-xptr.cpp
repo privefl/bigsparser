@@ -19,7 +19,7 @@ SEXP getXPtrSFBM0(std::string path, int n, int m, const std::vector<size_t>& p,
   } catch(std::exception &ex) {
     forward_exception_to_r(ex);
   } catch(...) {
-    ::Rf_error("C++ exception (unknown reason)");
+    Rcpp::stop("C++ exception (unknown reason)");
   }
 
   return R_NilValue;
@@ -60,7 +60,7 @@ SEXP getXPtrSFBM_corr_compact(std::string path, int n, int m,
   } catch(std::exception &ex) {
     forward_exception_to_r(ex);
   } catch(...) {
-    ::Rf_error("C++ exception (unknown reason)");
+    Rcpp::stop("C++ exception (unknown reason)");
   }
 
   return R_NilValue;
